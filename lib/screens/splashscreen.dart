@@ -22,7 +22,7 @@ class SplashScreenState extends State<MyHomePage> {
         () => Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-                builder: (context) => HomeScreen(title: 'Yu-Gi-Oh!'))));
+                builder: (context) => const HomeScreen(title: 'Yu-Gi-Oh!'))));
   }
 
   @override

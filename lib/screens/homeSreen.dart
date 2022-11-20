@@ -36,10 +36,19 @@ class HomeScreenState extends State<HomeScreen> {
           children: <Widget>[
             ElevatedButton(
                 onPressed: () => Navigator.pushNamed(context, '/routeId'),
-                child: Text('Card By Id')),
+                child: const SizedBox(
+                  height: 50,
+                  width: 100,
+                  child: Text('Card By Id', textAlign: TextAlign.center),
+                )),
+                const Padding(padding: EdgeInsets.all(10),),
             ElevatedButton(
                 onPressed: () => Navigator.pushNamed(context, '/routeType'),
-                child: Text('Card By Type')),
+                child: const SizedBox(
+                  height: 50,
+                  width: 100,
+                  child: Text('Card By Type',  textAlign: TextAlign.center)
+                )),
           ],
         ),
       ),

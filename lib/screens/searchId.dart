@@ -1,8 +1,13 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:yugioh_api/class/api_calls.dart';
 import 'package:yugioh_api/main.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
+
+import 'package:yugioh_api/screens/searchType.dart';
 
 class IdPage extends StatefulWidget {
   const IdPage({super.key, required this.title});
@@ -21,7 +26,7 @@ class IdPageState extends State<IdPage> {
   Widget _widgetCard = Container();
 
   void recupCard() async {
-    _card = await _api.getCard(_value);
+    _card = await _api.getCardById(_value);
     buildCard();
   }
 
@@ -64,20 +69,22 @@ class IdPageState extends State<IdPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
+              _widgetCard,
               Container(
                 child: Form(
                   key: _formKey,
                   child: Column(
                     children: [
-                      _widgetCard,
                       TextFormField(
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                        ],
                         autofocus: true,
                         decoration: const InputDecoration(
-                            hintText: 'Name, id..',
-                            labelText: 'Search a card:'),
+                            hintText: 'Id..', labelText: 'Search a card:'),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter a name or an ID';
+                            return 'Please enter an ID';
                           } else {
                             _value = int.parse(value);
                           }
@@ -114,8 +121,7 @@ class IdPageState extends State<IdPage> {
                 direction: Axis.vertical,
                 children: [
                   IconButton(
-                      onPressed: () => null,
-                      icon: const Icon(Icons.filter_1)),
+                      onPressed: () => null, icon: const Icon(Icons.filter_1)),
                   const Text(
                     "ById",
                     style: TextStyle(
@@ -129,7 +135,12 @@ class IdPageState extends State<IdPage> {
                 direction: Axis.vertical,
                 children: [
                   IconButton(
-                      onPressed: () =>Navigator.pushNamed(context, '/routeType'),
+                      onPressed: () => Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                const TypePage(title: 'Yu-Gi-Oh! - Find By Type'),
+                          )),
                       icon: const Icon(Icons.filter_2)),
                   const Text(
                     "ByType",
