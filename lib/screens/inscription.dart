@@ -21,14 +21,14 @@ class InscriptionPageState extends State<InscriptionPage> {
   ApiAccount _apiAcc = ApiAccount();
 
   void checkAccount() async {
-    var connexion = await _apiAcc.createAccount(_login, _mdp1);
-    log(connexion.statusCode.toString());
-    if (connexion.statusCode == 201) {
+    var response = await _apiAcc.createAccount(_login, _mdp1);
+    log(response.statusCode.toString());
+    if (response.statusCode == 201) {
       Navigator.pushReplacementNamed(context, '/routeConnexion');
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Account create'),
       ));
-    } else if (connexion.statusCode == 422) {
+    } else if (response.statusCode == 422) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Login already in used'),
       ));
@@ -43,6 +43,7 @@ class InscriptionPageState extends State<InscriptionPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: Text(widget.title),
         leading: Padding(
             padding: EdgeInsets.only(right: 20.0),

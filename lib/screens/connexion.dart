@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:yugioh_api/class/api_account.dart';
 
 class ConnexionPage extends StatefulWidget {
   const ConnexionPage({super.key, required this.title});
@@ -14,13 +15,31 @@ class ConnexionPageState extends State<ConnexionPage> {
   final _formKey = GlobalKey<FormState>();
   String _login = '';
   String _mdp = '';
+  ApiAccount _apiAcc = ApiAccount();
 
-  void connect() {}
+  void connect() async {
+    var response = await _apiAcc.getToken(_login, _mdp);
+    if (response.statusCode == 200) {
+      Navigator.pushReplacementNamed(context, '/routeHome');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Welcome back $_login !'),
+      ));
+    } else if (response.statusCode == 400) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Invalid credentials'),
+      ));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Internal server error'),
+      ));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: Text(widget.title),
         actions: [
           Padding(
@@ -60,6 +79,7 @@ class ConnexionPageState extends State<ConnexionPage> {
               Container(
                 width: MediaQuery.of(context).size.width * 0.8,
                 child: TextFormField(
+                  obscureText: true,
                   decoration: const InputDecoration(labelText: "Password"),
                   validator: (valeur) {
                     if (valeur == null || valeur.isEmpty) {

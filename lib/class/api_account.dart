@@ -17,4 +17,17 @@ class ApiAccount {
       }),
     );
   }
+  Future<http.Response> getToken(String login, String mdp) {
+    return http.post(
+      Uri.parse('https://s3-4428.nuage-peda.fr/yugiohApi/public/api/authentication_token'),
+      headers: <String, String>{
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: convert.jsonEncode(<String, dynamic>{
+        "username": login,
+        "password": mdp,
+      }),
+    );
+  }
 }

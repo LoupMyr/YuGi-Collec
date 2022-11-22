@@ -19,6 +19,7 @@ class HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: Text(widget.title),
       ),
       body: Center(
@@ -66,6 +67,38 @@ class HomeScreenState extends State<HomeScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Text('Card By Level', textAlign: TextAlign.center),
+                  ],
+                ),
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.all(10),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pushNamed(context, '/routeCollection'),
+              child: SizedBox(
+                height: 50,
+                width: 100,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text('My collection', textAlign: TextAlign.center),
+                  ],
+                ),
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.all(10),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pushNamed(context, '/routeDecks'),
+              child: SizedBox(
+                height: 50,
+                width: 100,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text('My decks', textAlign: TextAlign.center),
                   ],
                 ),
               ),

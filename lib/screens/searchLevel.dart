@@ -29,15 +29,22 @@ class LevelPageState extends State<LevelPage> {
   }
 
   void buildCards() {
+    _tabChildren.clear();
     for (int i = 0; i < _cards['data'].length; i++) {
       _tabChildren.add(Container(
         child: Column(
           children: <Widget>[
-            Image(
-              image: NetworkImage(
-                  _cards['data'][i]['card_images'][0]['image_url']),
-              height: MediaQuery.of(context).size.height * 0.6,
-              width: MediaQuery.of(context).size.width * 0.6,
+            ElevatedButton(
+              onPressed: () => null,
+              onLongPress: saveToCollection,
+              style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Colors.white)),
+              child: Image(
+                image: NetworkImage(
+                    _cards['data'][i]['card_images'][0]['image_url']),
+                height: MediaQuery.of(context).size.height * 0.6,
+                width: MediaQuery.of(context).size.width * 0.6,
+              ),
             ),
             Text(
               'Name: ' + _cards['data'][i]['name'],
@@ -60,14 +67,36 @@ class LevelPageState extends State<LevelPage> {
     }
     setState(() {
       _tabChildren;
-      _height = MediaQuery.of(context).size.height * 0.8;
+      _height = MediaQuery.of(context).size.height * 0.9;
     });
+  }
+
+  Future<String?> saveToCollection() {
+    return showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Save card'),
+        content: const Text(
+            'Are you sure you want to save this card to your collection ?'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'Anuuler'),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'Ok'),
+            child: const Text('Ok'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: Text(widget.title),
       ),
       body: SingleChildScrollView(
@@ -95,7 +124,7 @@ class LevelPageState extends State<LevelPage> {
                     children: [
                       TextFormField(
                         inputFormatters: [
-                          FilteringTextInputFormatter.allow(RegExp(r'[1-9]')),
+                          FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
                         ],
                         autofocus: true,
                         decoration: const InputDecoration(

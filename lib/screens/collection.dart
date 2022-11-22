@@ -13,6 +13,19 @@ class CollectionPage extends StatefulWidget {
 class CollectionPageState extends State<CollectionPage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(widget.title),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text('My collec'),
+          ],
+        ),
+      ),
+    );
   }
 }

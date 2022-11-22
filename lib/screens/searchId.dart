@@ -32,12 +32,15 @@ class IdPageState extends State<IdPage> {
     setState(() {
       _widgetCard = Column(
         children: [
-          Image(
+          ElevatedButton(onPressed: () => null,
+            onLongPress: saveToCollection,
+            style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.white)),
+            child: Image(
             image:
                 NetworkImage(_card['data'][0]['card_images'][0]['image_url']),
             height: MediaQuery.of(context).size.height * 0.6,
             width: MediaQuery.of(context).size.width * 0.6,
-          ),
+          ),),
           Text(
             'Name: ' + _card['data'][0]['name'],
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -55,10 +58,30 @@ class IdPageState extends State<IdPage> {
     });
   }
 
+  Future<String?> saveToCollection(){
+    return showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Save card'),
+        content: const Text('Are you sure you want to save this card to your collection ?'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'Anuuler'),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'Ok'),
+            child: const Text('Ok'),
+          ),
+        ],
+      ),
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: Text(widget.title),
       ),
       body: SingleChildScrollView(
