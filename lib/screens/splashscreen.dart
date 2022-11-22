@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:yugioh_api/screens/connexion.dart';
 import 'package:yugioh_api/screens/homeSreen.dart';
 import 'package:yugioh_api/screens/searchId.dart';
 
@@ -22,7 +23,8 @@ class SplashScreenState extends State<MyHomePage> {
         () => Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-                builder: (context) => const HomeScreen(title: 'Yu-Gi-Oh!'))));
+                builder: (context) =>
+                    const ConnexionPage(title: 'Yu-Gi-Oh! - Sign In'))));
   }
 
   @override
@@ -42,8 +44,7 @@ class SplashScreenState extends State<MyHomePage> {
                   SizedBox(
                       width: MediaQuery.of(context).size.width,
                       height: MediaQuery.of(context).size.height,
-                      child: SpinKitRing(
-                          color: Colors.black, size: 150)),
+                      child: SpinKitRing(color: Colors.black, size: 150)),
                 ],
               ),
             ),

@@ -1,10 +1,4 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:yugioh_api/class/api_calls.dart';
-import 'package:yugioh_api/main.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert' as convert;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key, required this.title});
@@ -18,10 +12,8 @@ class HomeScreen extends StatefulWidget {
 class HomeScreenState extends State<HomeScreen> {
   final _formKey = GlobalKey<FormState>();
   int _value = -1;
-  Api _api = Api();
   var _card;
   Widget _widgetCard = Container();
-  bool sameRoute = false;
 
   @override
   Widget build(BuildContext context) {
@@ -36,19 +28,48 @@ class HomeScreenState extends State<HomeScreen> {
           children: <Widget>[
             ElevatedButton(
                 onPressed: () => Navigator.pushNamed(context, '/routeId'),
-                child: const SizedBox(
+                child: SizedBox(
                   height: 50,
                   width: 100,
-                  child: Text('Card By Id', textAlign: TextAlign.center),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text('Card By Id', textAlign: TextAlign.center),
+                    ],
+                  ),
                 )),
-                const Padding(padding: EdgeInsets.all(10),),
+            const Padding(
+              padding: EdgeInsets.all(10),
+            ),
             ElevatedButton(
-                onPressed: () => Navigator.pushNamed(context, '/routeType'),
-                child: const SizedBox(
-                  height: 50,
-                  width: 100,
-                  child: Text('Card By Type',  textAlign: TextAlign.center)
-                )),
+              onPressed: () => Navigator.pushNamed(context, '/routeType'),
+              child: SizedBox(
+                height: 50,
+                width: 100,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text('Card By Type', textAlign: TextAlign.center),
+                  ],
+                ),
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.all(10),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pushNamed(context, '/routeLevel'),
+              child: SizedBox(
+                height: 50,
+                width: 100,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text('Card By Level', textAlign: TextAlign.center),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),

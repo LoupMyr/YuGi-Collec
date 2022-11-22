@@ -1,57 +1,66 @@
-import 'dart:developer';
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:yugioh_api/class/api_yugioh.dart';
-import 'package:http/http.dart' as http;
-import 'package:yugioh_api/screens/searchLevel.dart';
-import 'dart:convert' as convert;
+import 'package:yugioh_api/screens/searchId.dart';
 import 'package:yugioh_api/screens/searchType.dart';
 
-class IdPage extends StatefulWidget {
-  const IdPage({super.key, required this.title});
+class LevelPage extends StatefulWidget {
+  const LevelPage({super.key, required this.title});
 
   final String title;
 
   @override
-  IdPageState createState() => IdPageState();
+  LevelPageState createState() => LevelPageState();
 }
 
-class IdPageState extends State<IdPage> {
+class LevelPageState extends State<LevelPage> {
   final _formKey = GlobalKey<FormState>();
-  int _value = -1;
+  String _value = '';
   ApiYGO _api = ApiYGO();
-  var _card;
-  Widget _widgetCard = Container();
+  var _cards;
+  List<Widget> _tabChildren = [];
+  double _height = 0;
 
-  void recupCard() async {
-    _card = await _api.getCardById(_value);
-    buildCard();
+  void recupCards() async {
+    _cards = await _api.getCardsByLevel(_value);
+    buildCards();
   }
 
-  void buildCard() {
+  void buildCards() {
+    for (int i = 0; i < _cards['data'].length; i++) {
+      _tabChildren.add(Container(
+        child: Column(
+          children: <Widget>[
+            Image(
+              image: NetworkImage(
+                  _cards['data'][i]['card_images'][0]['image_url']),
+              height: MediaQuery.of(context).size.height * 0.6,
+              width: MediaQuery.of(context).size.width * 0.6,
+            ),
+            Text(
+              'Name: ' + _cards['data'][i]['name'],
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold, /*overflow: TextOverflow.ellipsis*/
+              ),
+            ),
+            Text(
+              'Type: ' + _cards['data'][i]['type'],
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            Text(
+              'Level: ' + _cards['data'][i]['level'].toString(),
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+      ));
+    }
     setState(() {
-      _widgetCard = Column(
-        children: [
-          Image(
-            image:
-                NetworkImage(_card['data'][0]['card_images'][0]['image_url']),
-            height: MediaQuery.of(context).size.height * 0.6,
-            width: MediaQuery.of(context).size.width * 0.6,
-          ),
-          Text(
-            'Name: ' + _card['data'][0]['name'],
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          Text(
-            'Type: ' + _card['data'][0]['type'],
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          Text(
-            'Level: ' + _card['data'][0]['level'].toString(),
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-        ],
-      );
+      _tabChildren;
+      _height = MediaQuery.of(context).size.height * 0.8;
     });
   }
 
@@ -64,10 +73,21 @@ class IdPageState extends State<IdPage> {
       body: SingleChildScrollView(
         child: Center(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            //mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              _widgetCard,
+              CarouselSlider(
+                items: _tabChildren,
+                options: CarouselOptions(
+                  enlargeCenterPage: false,
+                  height: _height,
+                  autoPlay: true,
+                  autoPlayCurve: Curves.easeInOutCirc,
+                  enableInfiniteScroll: true,
+                  autoPlayAnimationDuration: Duration(seconds: 5),
+                  viewportFraction: 0.8,
+                ),
+              ),
               Container(
                 child: Form(
                   key: _formKey,
@@ -75,17 +95,17 @@ class IdPageState extends State<IdPage> {
                     children: [
                       TextFormField(
                         inputFormatters: [
-                          FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                          FilteringTextInputFormatter.allow(RegExp(r'[1-9]')),
                         ],
                         autofocus: true,
                         decoration: const InputDecoration(
-                            hintText: '6983839...',
-                            labelText: 'Search a card by ID:'),
+                            hintText: '6...',
+                            labelText: 'Search cards by Level:'),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter an ID';
+                            return 'Please enter a level';
                           } else {
-                            _value = int.parse(value);
+                            _value = value.toString();
                           }
                         },
                       ),
@@ -94,7 +114,7 @@ class IdPageState extends State<IdPage> {
                       ElevatedButton(
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
-                            recupCard();
+                            recupCards();
                           }
                         },
                         child: const Text("Search"),
@@ -120,7 +140,13 @@ class IdPageState extends State<IdPage> {
                 direction: Axis.vertical,
                 children: [
                   IconButton(
-                      onPressed: () => null, icon: const Icon(Icons.filter_1)),
+                      onPressed: () => Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                const IdPage(title: 'Yu-Gi-Oh! - Find By Id'),
+                          )),
+                      icon: const Icon(Icons.filter_1)),
                   const Text(
                     "ById",
                     style: TextStyle(
@@ -154,13 +180,7 @@ class IdPageState extends State<IdPage> {
                 direction: Axis.vertical,
                 children: [
                   IconButton(
-                      onPressed: () => Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const LevelPage(
-                                title: 'Yu-Gi-Oh! - Find By Level'),
-                          )),
-                      icon: const Icon(Icons.filter_3)),
+                      onPressed: () => null, icon: const Icon(Icons.filter_3)),
                   const Text(
                     "ByLevel",
                     style: TextStyle(
