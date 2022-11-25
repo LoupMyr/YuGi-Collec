@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:yugioh_api/class/api_account.dart';
+import 'package:yugioh_api/class/local.dart';
+import 'dart:convert' as convert;
 
 class ConnexionPage extends StatefulWidget {
   const ConnexionPage({super.key, required this.title});
@@ -20,6 +22,13 @@ class ConnexionPageState extends State<ConnexionPage> {
   void connect() async {
     var response = await _apiAcc.getToken(_login, _mdp);
     if (response.statusCode == 200) {
+      localLogin = _login;
+      localPassword = _mdp;
+      var token = convert.jsonDecode(response.body);
+      localToken = token['token'].toString();
+      print(localLogin);
+      print(localPassword);
+      print(localToken);
       Navigator.pushReplacementNamed(context, '/routeHome');
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Welcome back $_login !'),

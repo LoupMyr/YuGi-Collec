@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:yugioh_api/class/api_account.dart';
 import 'package:yugioh_api/class/api_yugioh.dart';
 import 'package:http/http.dart' as http;
 import 'package:yugioh_api/screens/searchLevel.dart';
@@ -19,12 +20,15 @@ class IdPage extends StatefulWidget {
 class IdPageState extends State<IdPage> {
   final _formKey = GlobalKey<FormState>();
   int _value = -1;
-  ApiYGO _api = ApiYGO();
+  ApiYGO _apiYGO = ApiYGO();
+  ApiAccount _apiAcc = ApiAccount();
   var _card;
   Widget _widgetCard = Container();
+  String _numCard = '';
 
   void recupCard() async {
-    _card = await _api.getCardById(_value);
+    _card = await _apiYGO.getCardById(_value);
+    _numCard = _card['data'][0]['id'].toString();
     buildCard();
   }
 
@@ -33,7 +37,7 @@ class IdPageState extends State<IdPage> {
       _widgetCard = Column(
         children: [
           ElevatedButton(onPressed: () => null,
-            onLongPress: saveToCollection,
+            onLongPress: saveMenu,
             style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.white)),
             child: Image(
             image:
@@ -58,25 +62,48 @@ class IdPageState extends State<IdPage> {
     });
   }
 
-  Future<String?> saveToCollection(){
+  Future<String?> saveMenu(){
     return showDialog<String>(
       context: context,
-      builder: (BuildContext context) => AlertDialog(
+      barrierDismissible: true,
+      builder: (BuildContext context) => SimpleDialog(
         title: const Text('Save card'),
-        content: const Text('Are you sure you want to save this card to your collection ?'),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.pop(context, 'Anuuler'),
-            child: const Text('Cancel'),
+        children: <Widget>[
+          SimpleDialogOption(
+            onPressed: saveToCollection,
+            child: Text('To your collection'),
           ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, 'Ok'),
-            child: const Text('Ok'),
+          SimpleDialogOption(
+            onPressed: buildDecksChoice,
+            child: Text('To one of your decks'),
           ),
         ],
       ),
     );
   }
+
+  void buildDecksChoice(){
+    Navigator.pop(context);
+  }
+
+  void saveToDecks(){
+    Navigator.pop(context);
+  }
+
+  void saveToCollection() async {
+    await _apiAcc.postCard(_numCard);
+    String uriCard = await _apiAcc.getUriCard(_numCard);
+    String uriUser = await _apiAcc.getUriUser();
+    if(await _apiAcc.checkCollecByUriUser(uriUser) == false){
+      var postCollec = await _apiAcc.postCollec(uriUser);
+      print(postCollec.statusCode);
+    }
+    int idCollec = await _apiAcc.getCollecIdByUriUser(uriUser);
+    var patch = await _apiAcc.patchCollec(idCollec, uriUser, uriCard);
+    print(patch.statusCode);
+    Navigator.pop(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

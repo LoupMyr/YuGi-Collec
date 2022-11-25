@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
           '/routeConnexion': (BuildContext context) =>
               const ConnexionPage(title: "Yu-Gi-Oh! - Connect"),
           '/routeInscription': (BuildContext context) =>
-              const InscriptionPage(title: "Yu-Gi-Oh! - Register"),
+              const InscriptionPage(title: "Yu-Gi-Oh! - Sign up"),
           '/routeCollection': (BuildContext context) =>
               const CollectionPage(title: "Yu-Gi-Oh! - My Collection"),
           '/routeDecks': (BuildContext context) =>
