@@ -36,15 +36,18 @@ class IdPageState extends State<IdPage> {
     setState(() {
       _widgetCard = Column(
         children: [
-          ElevatedButton(onPressed: () => null,
+          ElevatedButton(
+            onPressed: () => null,
             onLongPress: saveMenu,
-            style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.white)),
+            style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(Colors.white)),
             child: Image(
-            image:
-                NetworkImage(_card['data'][0]['card_images'][0]['image_url']),
-            height: MediaQuery.of(context).size.height * 0.6,
-            width: MediaQuery.of(context).size.width * 0.6,
-          ),),
+              image:
+                  NetworkImage(_card['data'][0]['card_images'][0]['image_url']),
+              height: MediaQuery.of(context).size.height * 0.6,
+              width: MediaQuery.of(context).size.width * 0.6,
+            ),
+          ),
           Text(
             'Name: ' + _card['data'][0]['name'],
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -62,7 +65,7 @@ class IdPageState extends State<IdPage> {
     });
   }
 
-  Future<String?> saveMenu(){
+  Future<String?> saveMenu() {
     return showDialog<String>(
       context: context,
       barrierDismissible: true,
@@ -82,11 +85,11 @@ class IdPageState extends State<IdPage> {
     );
   }
 
-  void buildDecksChoice(){
+  void buildDecksChoice() {
     Navigator.pop(context);
   }
 
-  void saveToDecks(){
+  void saveToDecks() {
     Navigator.pop(context);
   }
 
@@ -94,13 +97,14 @@ class IdPageState extends State<IdPage> {
     await _apiAcc.postCard(_numCard);
     String uriCard = await _apiAcc.getUriCard(_numCard);
     String uriUser = await _apiAcc.getUriUser();
-    if(await _apiAcc.checkCollecByUriUser(uriUser) == false){
+    if (await _apiAcc.checkCollecByUriUser(uriUser) == false) {
       var postCollec = await _apiAcc.postCollec(uriUser);
-      print(postCollec.statusCode);
+      print('Post Collec: ' + postCollec.statusCode.toString());
     }
     int idCollec = await _apiAcc.getCollecIdByUriUser(uriUser);
-    var patch = await _apiAcc.patchCollec(idCollec, uriUser, uriCard);
-    print(patch.statusCode);
+    List<dynamic> listCards = await _apiAcc.getListCardsFromCollec(idCollec);
+    var patch = await _apiAcc.patchCollec(idCollec, listCards, uriCard);
+    print('Patch Collec: ' + patch.statusCode.toString());
     Navigator.pop(context);
   }
 

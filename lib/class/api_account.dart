@@ -4,7 +4,6 @@ import 'dart:convert' as convert;
 import 'package:yugioh_api/class/local.dart';
 
 class ApiAccount {
-
   String _login = localLogin;
   String _mdp = localPassword;
   String _token = localToken;
@@ -54,8 +53,8 @@ class ApiAccount {
     // print('getUriUser');
     var users = await getUsers();
     String uri = '';
-    for(var elt in users['hydra:member']){
-      if(elt['username'] == _login){
+    for (var elt in users['hydra:member']) {
+      if (elt['username'] == _login) {
         uri = elt['@id'];
       }
     }
@@ -88,8 +87,8 @@ class ApiAccount {
     // print('getUriCard');
     var cards = await getCards();
     String uri = '';
-    for(var elt in cards['hydra:member']){
-      if(elt['numCarte'] == numCard){
+    for (var elt in cards['hydra:member']) {
+      if (elt['numCarte'] == numCard) {
         uri = elt['@id'];
       }
     }
@@ -112,6 +111,7 @@ class ApiAccount {
       }),
     );
   }
+
   Future<dynamic> getCollecs() async {
     String url = 'https://s3-4428.nuage-peda.fr/yugiohApi/public/api/collecs';
     var response = await http.get(Uri.parse(url));
@@ -123,8 +123,8 @@ class ApiAccount {
     // print('checkCollec');
     bool alreadyExist = false;
     var collecs = await getCollecs();
-    for(var elt in collecs['hydra:member']){
-      if(elt['user'] == uriUser){
+    for (var elt in collecs['hydra:member']) {
+      if (elt['user'] == uriUser) {
         alreadyExist = true;
       }
     }
@@ -135,29 +135,42 @@ class ApiAccount {
     // print('getCollectByUriUser');
     int id = -1;
     var collecs = await getCollecs();
-    for(var elt in collecs['hydra:member']){
-      if(elt['user'] == uriUser){
+    for (var elt in collecs['hydra:member']) {
+      if (elt['user'] == uriUser) {
         id = elt['id'];
       }
     }
-    print('idCollec: '+ id.toString());
+    print('idCollec: ' + id.toString());
     return id;
   }
 
-  Future<http.Response> patchCollec(int id, String userUri, String cardUri) async{
-    print('userUri Patch:' + userUri);
-    print('cardUri Patch:' + cardUri);
-    print(id);
+  Future<http.Response> patchCollec(
+      int id, List<dynamic> listCards, String cardUri) async {
+    print('cardUri Patch: ' + cardUri);
+    print('id Collec: ' + id.toString());
+    listCards.add(cardUri);
+    print(listCards.toString());
+    var json = convert.jsonEncode(<String, dynamic>{"cartes": listCards});
     return await http.patch(
-      Uri.parse('https://s3-4428.nuage-peda.fr/yugiohApi/public/api/collecs/' + id.toString()),
-      headers: <String, String>{
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: convert.jsonEncode(<String, dynamic>{
-        "cartes": cardUri.toString()
-      }),
-    );
+        Uri.parse(
+            'https://s3-4428.nuage-peda.fr/yugiohApi/public/api/collecs/' +
+                id.toString()),
+        headers: <String, String>{
+          'Accept': 'application/ld+json',
+          'Content-Type': 'application/merge-patch+json',
+        },
+        body: json);
+  }
+
+  Future<List<dynamic>> getListCardsFromCollec(idCollec) async {
+    String url = 'https://s3-4428.nuage-peda.fr/yugiohApi/public/api/collecs/' +
+        idCollec.toString();
+    var response = await http.get(Uri.parse(url));
+    List<dynamic> tab = [];
+    if (response.statusCode == 200) {
+      var data = convert.jsonDecode(response.body);
+      tab = data['cartes'];
+    }
+    return tab;
   }
 }
-
