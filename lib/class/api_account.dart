@@ -44,13 +44,10 @@ class ApiAccount {
   Future<dynamic> getUsers() async {
     String url = 'https://s3-4428.nuage-peda.fr/yugiohApi/public/api/users';
     var response = await http.get(Uri.parse(url));
-    // print('getUsers: ' + response.statusCode.toString());
-
     return convert.jsonDecode(response.body);
   }
 
   Future<String> getUriUser() async {
-    // print('getUriUser');
     var users = await getUsers();
     String uri = '';
     for (var elt in users['hydra:member']) {
@@ -58,13 +55,11 @@ class ApiAccount {
         uri = elt['@id'];
       }
     }
-    print('uriUser: ' + uri);
     return uri;
   }
 
   // Actions sur Cartes
   Future<http.Response> postCard(String numCard) async {
-    // print('postCard');
     return await http.post(
       Uri.parse('https://s3-4428.nuage-peda.fr/yugiohApi/public/api/cartes'),
       headers: <String, String>{
@@ -84,7 +79,6 @@ class ApiAccount {
   }
 
   Future<String> getUriCard(String numCard) async {
-    // print('getUriCard');
     var cards = await getCards();
     String uri = '';
     for (var elt in cards['hydra:member']) {
@@ -92,14 +86,29 @@ class ApiAccount {
         uri = elt['@id'];
       }
     }
-    print('uriCard: ' + uri);
     return uri;
+  }
+
+  Future<int> getCardIdByUri() async {
+    var cards = await getCards();
+
+    return -1;
+  }
+
+  Future<List<dynamic>> getListCardsFromCollec(idCollec) async {
+    String url = 'https://s3-4428.nuage-peda.fr/yugiohApi/public/api/collecs/' +
+        idCollec.toString();
+    var response = await http.get(Uri.parse(url));
+    List<dynamic> tab = [];
+    if (response.statusCode == 200) {
+      var data = convert.jsonDecode(response.body);
+      tab = data['cartes'];
+    }
+    return tab;
   }
 
   // Actions sur Collections
   Future<http.Response> postCollec(String userUri) async {
-    // print('postCollec');
-    // print(userUri);
     return await http.post(
       Uri.parse('https://s3-4428.nuage-peda.fr/yugiohApi/public/api/collecs'),
       headers: <String, String>{
@@ -120,7 +129,6 @@ class ApiAccount {
   }
 
   Future<bool> checkCollecByUriUser(String uriUser) async {
-    // print('checkCollec');
     bool alreadyExist = false;
     var collecs = await getCollecs();
     for (var elt in collecs['hydra:member']) {
@@ -132,7 +140,6 @@ class ApiAccount {
   }
 
   Future<int> getCollecIdByUriUser(String uriUser) async {
-    // print('getCollectByUriUser');
     int id = -1;
     var collecs = await getCollecs();
     for (var elt in collecs['hydra:member']) {
@@ -140,7 +147,6 @@ class ApiAccount {
         id = elt['id'];
       }
     }
-    print('idCollec: ' + id.toString());
     return id;
   }
 
@@ -160,17 +166,5 @@ class ApiAccount {
           'Content-Type': 'application/merge-patch+json',
         },
         body: json);
-  }
-
-  Future<List<dynamic>> getListCardsFromCollec(idCollec) async {
-    String url = 'https://s3-4428.nuage-peda.fr/yugiohApi/public/api/collecs/' +
-        idCollec.toString();
-    var response = await http.get(Uri.parse(url));
-    List<dynamic> tab = [];
-    if (response.statusCode == 200) {
-      var data = convert.jsonDecode(response.body);
-      tab = data['cartes'];
-    }
-    return tab;
   }
 }
