@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:yugioh_api/class/api_account.dart';
+import 'package:yugioh_api/class/api_yugioh.dart';
 
 class CollectionPage extends StatefulWidget {
   const CollectionPage({super.key, required this.title});
@@ -15,11 +16,24 @@ class CollectionPage extends StatefulWidget {
 class CollectionPageState extends State<CollectionPage> {
   var _cards;
   ApiAccount _apiAcc = ApiAccount();
+  ApiYGO _apiYgo = ApiYGO();
+  List<String> _tabUrl = [];
 
   Future<String> recupCardsOfCollec() async {
+    _tabUrl.clear();
     String uriUser = await _apiAcc.getUriUser();
     int idCollec = await _apiAcc.getCollecIdByUriUser(uriUser);
     _cards = await _apiAcc.getListCardsFromCollec(idCollec);
+    for (int i = 0; i < _cards.length; i++) {
+      List<String> temp = _cards[i].split('/');
+      int longeur = _cards[i].split('/').length;
+      int idCardSrv = int.parse(temp[longeur - 1]);
+
+      var cardSrv = await _apiAcc.getCardById(idCardSrv);
+      var cardApi = await _apiYgo.getCardById(cardSrv['numCarte']);
+      _tabUrl.add(cardApi['data'][0]['card_images'][0]['image_url'].toString());
+    }
+    print(_tabUrl);
     await Future.delayed(const Duration(seconds: 2));
     return '';
   }
@@ -35,10 +49,23 @@ class CollectionPageState extends State<CollectionPage> {
         ],
       ));
     } else {
-      for (int i = 0; i < _cards.length; i++) {
+      for (int i = 0; i < _cards.length; i = i+2) {
         tabChildren.add(Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [Image(image: NetworkImage(_cards))],
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Image(
+              image: NetworkImage(_tabUrl[i]),
+              height: MediaQuery.of(context).size.height * 0.4,
+              width: MediaQuery.of(context).size.width * 0.4,
+            ),
+            Padding(padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.1)),
+            Image(
+              image: NetworkImage(_tabUrl[i + 1]),
+              height: MediaQuery.of(context).size.height * 0.4,
+              width: MediaQuery.of(context).size.width * 0.4,
+            ),
+          ],
         ));
       }
     }

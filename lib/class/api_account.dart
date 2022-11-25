@@ -78,6 +78,12 @@ class ApiAccount {
     return convert.jsonDecode(response.body);
   }
 
+  Future<dynamic> getCardById(int id) async {
+    String url = 'https://s3-4428.nuage-peda.fr/yugiohApi/public/api/cartes/' + id.toString();
+    var response = await http.get(Uri.parse(url));
+    return convert.jsonDecode(response.body);
+  }
+
   Future<String> getUriCard(String numCard) async {
     var cards = await getCards();
     String uri = '';
