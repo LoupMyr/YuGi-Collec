@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:yugioh_api/class/api_account.dart';
 import 'package:yugioh_api/class/api_yugioh.dart';
+import 'dart:convert' as convert;
 
 class CollectionPage extends StatefulWidget {
   const CollectionPage({super.key, required this.title});
@@ -30,7 +31,8 @@ class CollectionPageState extends State<CollectionPage> {
       int idCardSrv = int.parse(temp[longeur - 1]);
 
       var cardSrv = await _apiAcc.getCardById(idCardSrv);
-      var cardApi = await _apiYgo.getCardById(cardSrv['numCarte']);
+      var response = await _apiYgo.getCardById(cardSrv['numCarte']);
+      var cardApi = convert.jsonDecode(response.body);
       _tabUrl.add(cardApi['data'][0]['card_images'][0]['image_url'].toString());
     }
     print(_tabUrl);
@@ -49,24 +51,40 @@ class CollectionPageState extends State<CollectionPage> {
         ],
       ));
     } else {
-      for (int i = 0; i < _cards.length; i = i+2) {
-        tabChildren.add(Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Image(
-              image: NetworkImage(_tabUrl[i]),
-              height: MediaQuery.of(context).size.height * 0.4,
-              width: MediaQuery.of(context).size.width * 0.4,
-            ),
-            Padding(padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.1)),
-            Image(
-              image: NetworkImage(_tabUrl[i + 1]),
-              height: MediaQuery.of(context).size.height * 0.4,
-              width: MediaQuery.of(context).size.width * 0.4,
-            ),
-          ],
-        ));
+      for (int i = 0; i < _cards.length; i = i + 2) {
+        try {
+          tabChildren.add(Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Image(
+                image: NetworkImage(_tabUrl[i]),
+                height: MediaQuery.of(context).size.height * 0.4,
+                width: MediaQuery.of(context).size.width * 0.4,
+              ),
+              Padding(
+                  padding:
+                      EdgeInsets.all(MediaQuery.of(context).size.width * 0.1)),
+              Image(
+                image: NetworkImage(_tabUrl[i + 1]),
+                height: MediaQuery.of(context).size.height * 0.4,
+                width: MediaQuery.of(context).size.width * 0.4,
+              ),
+            ],
+          ));
+        } catch (e) {
+          tabChildren.add(Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Image(
+                image: NetworkImage(_tabUrl[i]),
+                height: MediaQuery.of(context).size.height * 0.4,
+                width: MediaQuery.of(context).size.width * 0.4,
+              ),
+            ],
+          ));
+        }
       }
     }
 

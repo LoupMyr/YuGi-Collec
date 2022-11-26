@@ -27,9 +27,24 @@ class IdPageState extends State<IdPage> {
   String _numCard = '';
 
   void recupCard() async {
-    _card = await _apiYGO.getCardById(_value);
-    _numCard = _card['data'][0]['id'].toString();
-    buildCard();
+    var response = await _apiYGO.getCardById(_value);
+    if (response.statusCode == 200) {
+      _card = convert.jsonDecode(response.body);
+      _numCard = _card['data'][0]['id'].toString();
+      buildCard();
+    } else {
+      buildError();
+    }
+  }
+
+  void buildError() {
+    setState(() {
+      _widgetCard = Column(
+        children: const <Widget>[
+          Text('Please enter a valid ID'),
+        ],
+      );
+    });
   }
 
   void buildCard() {

@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:yugioh_api/screens/connexion.dart';
-import 'package:yugioh_api/screens/homeSreen.dart';
+import 'package:yugioh_api/screens/homeScreen.dart';
 import 'package:yugioh_api/screens/searchId.dart';
 
 class MyHomePage extends StatefulWidget {

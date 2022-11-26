@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:yugioh_api/screens/collection.dart';
 import 'package:yugioh_api/screens/connexion.dart';
 import 'package:yugioh_api/screens/decks.dart';
-import 'package:yugioh_api/screens/homeSreen.dart';
+import 'package:yugioh_api/screens/homeScreen.dart';
 import 'package:yugioh_api/screens/inscription.dart';
 import 'package:yugioh_api/screens/searchId.dart';
 import 'package:yugioh_api/screens/searchLevel.dart';

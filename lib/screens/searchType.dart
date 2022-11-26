@@ -25,15 +25,37 @@ class TypePageState extends State<TypePage> {
   var _cards;
   List<Widget> _tabChildren = [];
   double _height = 0;
+  Widget _widgetError = Text('');
 
   void recupCards() async {
-    _cards = await _api.getCardsByType(_value);
-    buildCards();
+    var response = await _api.getCardsByType(_value);
+    print(response.statusCode);
+    if (response.statusCode == 200) {
+      _cards = convert.jsonDecode(response.body);
+      _widgetError = Text('');
+      buildCards();
+    }
+    else{
+      buildError();
+    }
+  }
+  void buildError() {
+    setState(() {
+      _widgetError = Column(
+        children: const <Widget>[
+          Text('Please enter a valid type'),
+        ],
+      );
+    });
   }
 
   void buildCards() {
     _tabChildren.clear();
     for (int i = 0; i < _cards['data'].length; i++) {
+      String lvl = _cards['data'][i]['level'].toString();
+      if(_cards['data'][i]['level'] == null){
+        lvl = 'none';
+      }
       _tabChildren.add(Container(
         child: Column(
           children: <Widget>[
@@ -61,7 +83,7 @@ class TypePageState extends State<TypePage> {
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             Text(
-              'Level: ' + _cards['data'][i]['level'].toString(),
+              'Level: ' + lvl,
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ],
@@ -108,6 +130,7 @@ class TypePageState extends State<TypePage> {
             //mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
+              _widgetError,
               CarouselSlider(
                 items: _tabChildren,
                 options: CarouselOptions(

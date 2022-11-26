@@ -41,6 +41,14 @@ class ApiAccount {
     return response;
   }
 
+  Future<void> UpdateToken() async {
+    var connexion = await getToken(_login, _mdp);
+    if (connexion.statusCode == 200) {
+      var data = convert.jsonDecode(connexion.body);
+      localToken = data['token'].toString();
+    }
+  }
+
   Future<dynamic> getUsers() async {
     String url = 'https://s3-4428.nuage-peda.fr/yugiohApi/public/api/users';
     var response = await http.get(Uri.parse(url));
