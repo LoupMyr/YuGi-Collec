@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:yugioh_api/class/api_account.dart';
 import 'package:yugioh_api/class/api_yugioh.dart';
 import 'package:yugioh_api/main.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -21,24 +22,25 @@ class TypePage extends StatefulWidget {
 class TypePageState extends State<TypePage> {
   final _formKey = GlobalKey<FormState>();
   String _value = '';
-  ApiYGO _api = ApiYGO();
+  ApiYGO _apiYGO = ApiYGO();
+  ApiAccount _apiAcc = ApiAccount();
   var _cards;
   List<Widget> _tabChildren = [];
   double _height = 0;
   Widget _widgetError = Text('');
 
   void recupCards() async {
-    var response = await _api.getCardsByType(_value);
+    var response = await _apiYGO.getCardsByType(_value);
     print(response.statusCode);
     if (response.statusCode == 200) {
       _cards = convert.jsonDecode(response.body);
       _widgetError = Text('');
       buildCards();
-    }
-    else{
+    } else {
       buildError();
     }
   }
+
   void buildError() {
     setState(() {
       _widgetError = Column(
@@ -53,7 +55,7 @@ class TypePageState extends State<TypePage> {
     _tabChildren.clear();
     for (int i = 0; i < _cards['data'].length; i++) {
       String lvl = _cards['data'][i]['level'].toString();
-      if(_cards['data'][i]['level'] == null){
+      if (_cards['data'][i]['level'] == null) {
         lvl = 'none';
       }
       _tabChildren.add(Container(
@@ -61,7 +63,7 @@ class TypePageState extends State<TypePage> {
           children: <Widget>[
             ElevatedButton(
               onPressed: () => null,
-              onLongPress: saveToCollection,
+              onLongPress: () => saveMenu(_cards['data'][i]['id'].toString()),
               style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all(Colors.white)),
               child: Image(
@@ -96,25 +98,47 @@ class TypePageState extends State<TypePage> {
     });
   }
 
-  Future<String?> saveToCollection() {
+  Future<String?> saveMenu(String numCard) {
     return showDialog<String>(
       context: context,
-      builder: (BuildContext context) => AlertDialog(
+      barrierDismissible: true,
+      builder: (BuildContext context) => SimpleDialog(
         title: const Text('Save card'),
-        content: const Text(
-            'Are you sure you want to save this card to your collection ?'),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.pop(context, 'Anuuler'),
-            child: const Text('Cancel'),
+        children: <Widget>[
+          SimpleDialogOption(
+            onPressed: () => saveToCollection(numCard),
+            child: Text('To your collection'),
           ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, 'Ok'),
-            child: const Text('Ok'),
+          SimpleDialogOption(
+            onPressed: buildDecksChoice,
+            child: Text('To one of your decks'),
           ),
         ],
       ),
     );
+  }
+
+  void buildDecksChoice() {
+    Navigator.pop(context);
+  }
+
+  void saveToDecks() {
+    Navigator.pop(context);
+  }
+
+  void saveToCollection(String numCard) async {
+    await _apiAcc.postCard(numCard);
+    String uriCard = await _apiAcc.getUriCard(numCard);
+    String uriUser = await _apiAcc.getUriUser();
+    if (await _apiAcc.checkCollecByUriUser(uriUser) == false) {
+      var postCollec = await _apiAcc.postCollec(uriUser);
+      print('Post Collec: ' + postCollec.statusCode.toString());
+    }
+    int idCollec = await _apiAcc.getCollecIdByUriUser(uriUser);
+    List<dynamic> listCards = await _apiAcc.getListCardsFromCollec(idCollec);
+    var patch = await _apiAcc.patchCollec(idCollec, listCards, uriCard);
+    print('Patch Collec: ' + patch.statusCode.toString());
+    Navigator.pop(context);
   }
 
   @override
