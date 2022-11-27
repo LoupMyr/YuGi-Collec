@@ -19,12 +19,13 @@ class CollectionPageState extends State<CollectionPage> {
   ApiAccount _apiAcc = ApiAccount();
   ApiYGO _apiYgo = ApiYGO();
   List<String> _tabUrl = [];
+  int _idCollec = -1;
 
   Future<String> recupCardsOfCollec() async {
     _tabUrl.clear();
     String uriUser = await _apiAcc.getUriUser();
-    int idCollec = await _apiAcc.getCollecIdByUriUser(uriUser);
-    _cards = await _apiAcc.getListCardsFromCollec(idCollec);
+    _idCollec = await _apiAcc.getCollecIdByUriUser(uriUser);
+    _cards = await _apiAcc.getListCardsFromCollec(_idCollec);
     for (int i = 0; i < _cards.length; i++) {
       List<String> temp = _cards[i].split('/');
       int longeur = _cards[i].split('/').length;
@@ -35,8 +36,6 @@ class CollectionPageState extends State<CollectionPage> {
       var cardApi = convert.jsonDecode(response.body);
       _tabUrl.add(cardApi['data'][0]['card_images'][0]['image_url'].toString());
     }
-    print(_tabUrl);
-    await Future.delayed(const Duration(seconds: 2));
     return '';
   }
 
@@ -57,19 +56,11 @@ class CollectionPageState extends State<CollectionPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Image(
-                image: NetworkImage(_tabUrl[i]),
-                height: MediaQuery.of(context).size.height * 0.4,
-                width: MediaQuery.of(context).size.width * 0.4,
-              ),
+              buildImg(i),
               Padding(
                   padding:
                       EdgeInsets.all(MediaQuery.of(context).size.width * 0.1)),
-              Image(
-                image: NetworkImage(_tabUrl[i + 1]),
-                height: MediaQuery.of(context).size.height * 0.4,
-                width: MediaQuery.of(context).size.width * 0.4,
-              ),
+              buildImg(i + 1),
             ],
           ));
         } catch (e) {
@@ -77,20 +68,68 @@ class CollectionPageState extends State<CollectionPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Image(
-                image: NetworkImage(_tabUrl[i]),
-                height: MediaQuery.of(context).size.height * 0.4,
-                width: MediaQuery.of(context).size.width * 0.4,
-              ),
+              buildImg(i),
             ],
           ));
         }
       }
     }
-
     return Column(
       children: tabChildren,
     );
+  }
+
+  Widget buildImg(int id) {
+    return ElevatedButton(
+      onPressed: () => null,
+      onLongPress: () => deleteMenu(id),
+      style:
+          ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.white)),
+      child: Image(
+        image: NetworkImage(_tabUrl[id]),
+        height: MediaQuery.of(context).size.height * 0.31,
+        width: MediaQuery.of(context).size.width * 0.31,
+      ),
+    );
+  }
+
+  Future<String?> deleteMenu(int id) {
+    return showDialog<String>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Delete card'),
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: const <Widget>[
+              Text(
+                  'Are you sure you want to delete this card from your collection ?'),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => deleteCard(id),
+            child: const Text('Yes'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> deleteCard(int id) async {
+    _cards.removeAt(id);
+    var patch = await _apiAcc.patchCollecRemoveCard(_idCollec, _cards);
+    print(patch.statusCode);
+    setState(() {
+      _cards;
+      buildCards();
+    });
+    Navigator.of(context).pop();
   }
 
   @override

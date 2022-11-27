@@ -118,7 +118,7 @@ class IdPageState extends State<IdPage> {
     }
     int idCollec = await _apiAcc.getCollecIdByUriUser(uriUser);
     List<dynamic> listCards = await _apiAcc.getListCardsFromCollec(idCollec);
-    var patch = await _apiAcc.patchCollec(idCollec, listCards, uriCard);
+    var patch = await _apiAcc.patchCollecAddCard(idCollec, listCards, uriCard);
     print('Patch Collec: ' + patch.statusCode.toString());
     Navigator.pop(context);
   }

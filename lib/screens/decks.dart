@@ -21,9 +21,7 @@ class DeckPageState extends State<DeckPage> {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text('Decks')
-          ],
+          children: <Widget>[Text('Decks')],
         ),
       ),
     );

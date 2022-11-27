@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 
@@ -87,7 +89,8 @@ class ApiAccount {
   }
 
   Future<dynamic> getCardById(int id) async {
-    String url = 'https://s3-4428.nuage-peda.fr/yugiohApi/public/api/cartes/' + id.toString();
+    String url = 'https://s3-4428.nuage-peda.fr/yugiohApi/public/api/cartes/' +
+        id.toString();
     var response = await http.get(Uri.parse(url));
     return convert.jsonDecode(response.body);
   }
@@ -164,12 +167,26 @@ class ApiAccount {
     return id;
   }
 
-  Future<http.Response> patchCollec(
+  Future<http.Response> patchCollecAddCard(
       int id, List<dynamic> listCards, String cardUri) async {
     print('cardUri Patch: ' + cardUri);
     print('id Collec: ' + id.toString());
     listCards.add(cardUri);
     print(listCards.toString());
+    var json = convert.jsonEncode(<String, dynamic>{"cartes": listCards});
+    return await http.patch(
+        Uri.parse(
+            'https://s3-4428.nuage-peda.fr/yugiohApi/public/api/collecs/' +
+                id.toString()),
+        headers: <String, String>{
+          'Accept': 'application/ld+json',
+          'Content-Type': 'application/merge-patch+json',
+        },
+        body: json);
+  }
+
+  Future<http.Response> patchCollecRemoveCard(
+      int id, List<dynamic> listCards) async {
     var json = convert.jsonEncode(<String, dynamic>{"cartes": listCards});
     return await http.patch(
         Uri.parse(
