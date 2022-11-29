@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:yugioh_api/screens/connexion.dart';
+import 'package:yugioh_api/screens/login/connexion.dart';
 import 'package:yugioh_api/screens/homeScreen.dart';
-import 'package:yugioh_api/screens/searchId.dart';
+import 'package:yugioh_api/screens/search/searchId.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});

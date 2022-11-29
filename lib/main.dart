@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:yugioh_api/screens/collection.dart';
-import 'package:yugioh_api/screens/connexion.dart';
-import 'package:yugioh_api/screens/decks.dart';
+import 'package:yugioh_api/screens/users/collection.dart';
+import 'package:yugioh_api/screens/login/connexion.dart';
+import 'package:yugioh_api/screens/users/decks.dart';
 import 'package:yugioh_api/screens/homeScreen.dart';
-import 'package:yugioh_api/screens/inscription.dart';
-import 'package:yugioh_api/screens/searchId.dart';
-import 'package:yugioh_api/screens/searchLevel.dart';
-import 'package:yugioh_api/screens/searchType.dart';
+import 'package:yugioh_api/screens/login/inscription.dart';
+import 'package:yugioh_api/screens/search/searchId.dart';
+import 'package:yugioh_api/screens/search/searchLevel.dart';
+import 'package:yugioh_api/screens/search/searchType.dart';
 import 'package:yugioh_api/screens/splashscreen.dart';
 
 void main() {

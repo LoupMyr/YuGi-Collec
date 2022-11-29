@@ -1,25 +1,23 @@
-import 'dart:developer';
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:yugioh_api/class/api_account.dart';
 import 'package:yugioh_api/class/api_yugioh.dart';
-import 'package:yugioh_api/main.dart';
-import 'package:carousel_slider/carousel_slider.dart';
-import 'package:http/http.dart' as http;
+import 'package:yugioh_api/screens/search/searchId.dart';
+import 'package:yugioh_api/screens/search/searchType.dart';
 import 'dart:convert' as convert;
-import 'package:yugioh_api/screens/searchId.dart';
-import 'package:yugioh_api/screens/searchLevel.dart';
 
-class TypePage extends StatefulWidget {
-  const TypePage({super.key, required this.title});
+class LevelPage extends StatefulWidget {
+  const LevelPage({super.key, required this.title});
 
   final String title;
 
   @override
-  TypePageState createState() => TypePageState();
+  LevelPageState createState() => LevelPageState();
 }
 
-class TypePageState extends State<TypePage> {
+class LevelPageState extends State<LevelPage> {
   final _formKey = GlobalKey<FormState>();
   String _value = '';
   ApiYGO _apiYGO = ApiYGO();
@@ -30,8 +28,7 @@ class TypePageState extends State<TypePage> {
   Widget _widgetError = Text('');
 
   void recupCards() async {
-    var response = await _apiYGO.getCardsByType(_value);
-    print(response.statusCode);
+    var response = await _apiYGO.getCardsByLevel(_value);
     if (response.statusCode == 200) {
       _cards = convert.jsonDecode(response.body);
       _widgetError = Text('');
@@ -45,7 +42,7 @@ class TypePageState extends State<TypePage> {
     setState(() {
       _widgetError = Column(
         children: const <Widget>[
-          Text('Please enter a valid type'),
+          Text('Please enter a valid level'),
         ],
       );
     });
@@ -94,7 +91,7 @@ class TypePageState extends State<TypePage> {
     }
     setState(() {
       _tabChildren;
-      _height = MediaQuery.of(context).size.height * 0.8;
+      _height = MediaQuery.of(context).size.height * 0.9;
     });
   }
 
@@ -126,7 +123,7 @@ class TypePageState extends State<TypePage> {
     Navigator.pop(context);
   }
 
-  void saveToCollection(String numCard) async {
+  void saveToCollection(numCard) async {
     await _apiAcc.postCard(numCard);
     String uriCard = await _apiAcc.getUriCard(numCard);
     String uriUser = await _apiAcc.getUriUser();
@@ -174,16 +171,15 @@ class TypePageState extends State<TypePage> {
                     children: [
                       TextFormField(
                         inputFormatters: [
-                          FilteringTextInputFormatter.allow(
-                              RegExp(r'[a-zA-Z ]')),
+                          FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
                         ],
                         autofocus: true,
                         decoration: const InputDecoration(
-                            hintText: 'XYZ Monster...',
-                            labelText: 'Search cards by Type:'),
+                            hintText: '6...',
+                            labelText: 'Search cards by Level:'),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter a type';
+                            return 'Please enter a level';
                           } else {
                             _value = value.toString();
                           }
@@ -240,7 +236,13 @@ class TypePageState extends State<TypePage> {
                 direction: Axis.vertical,
                 children: [
                   IconButton(
-                      onPressed: () => null, icon: const Icon(Icons.filter_2)),
+                      onPressed: () => Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const TypePage(
+                                title: 'Yu-Gi-Oh! - Find By Type'),
+                          )),
+                      icon: const Icon(Icons.filter_2)),
                   const Text(
                     "ByType",
                     style: TextStyle(
@@ -254,13 +256,7 @@ class TypePageState extends State<TypePage> {
                 direction: Axis.vertical,
                 children: [
                   IconButton(
-                      onPressed: () => Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const LevelPage(
-                                title: 'Yu-Gi-Oh! - Find By Level'),
-                          )),
-                      icon: const Icon(Icons.filter_3)),
+                      onPressed: () => null, icon: const Icon(Icons.filter_3)),
                   const Text(
                     "ByLevel",
                     style: TextStyle(

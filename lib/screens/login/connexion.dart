@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:yugioh_api/class/api_account.dart';
 import 'package:yugioh_api/class/local.dart';
@@ -26,9 +25,6 @@ class ConnexionPageState extends State<ConnexionPage> {
       localPassword = _mdp;
       var token = convert.jsonDecode(response.body);
       localToken = token['token'].toString();
-      print(localLogin);
-      print(localPassword);
-      print(localToken);
       Navigator.pushReplacementNamed(context, '/routeHome');
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Welcome back $_login !'),

@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:yugioh_api/class/api_account.dart';
@@ -87,8 +86,8 @@ class CollectionPageState extends State<CollectionPage> {
           ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.white)),
       child: Image(
         image: NetworkImage(_tabUrl[id]),
-        height: MediaQuery.of(context).size.height * 0.31,
-        width: MediaQuery.of(context).size.width * 0.31,
+        height: MediaQuery.of(context).size.height * 0.28,
+        width: MediaQuery.of(context).size.width * 0.28,
       ),
     );
   }

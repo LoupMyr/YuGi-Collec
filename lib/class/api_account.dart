@@ -198,4 +198,24 @@ class ApiAccount {
         },
         body: json);
   }
+
+  // Actions sur Decks
+  Future<http.Response> postDeck(String nom, String uriuser) {
+    var response = http.post(
+      Uri.parse('https://s3-4428.nuage-peda.fr/yugiohApi/public/api/decks'),
+      headers: <String, String>{
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: convert.jsonEncode(<String, dynamic>{'nom': nom, 'user': uriuser}),
+    );
+    return response;
+  }
+
+  Future<dynamic> getDecks() async {
+    String url = 'https://s3-4428.nuage-peda.fr/yugiohApi/public/api/decks';
+    var response = await http.get(Uri.parse(url));
+    var data = convert.jsonDecode(response.body);
+    return data;
+  }
 }

@@ -1,12 +1,13 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:yugioh_api/class/api_account.dart';
 import 'package:yugioh_api/class/api_yugioh.dart';
 import 'package:http/http.dart' as http;
-import 'package:yugioh_api/screens/searchLevel.dart';
+import 'package:yugioh_api/screens/search/searchLevel.dart';
 import 'dart:convert' as convert;
-import 'package:yugioh_api/screens/searchType.dart';
+import 'package:yugioh_api/screens/search/searchType.dart';
 
 class IdPage extends StatefulWidget {
   const IdPage({super.key, required this.title});
@@ -19,12 +20,14 @@ class IdPage extends StatefulWidget {
 
 class IdPageState extends State<IdPage> {
   final _formKey = GlobalKey<FormState>();
+  final _formKeyDeck = GlobalKey<FormState>();
   int _value = -1;
   ApiYGO _apiYGO = ApiYGO();
   ApiAccount _apiAcc = ApiAccount();
   var _card;
   Widget _widgetCard = Container();
   String _numCard = '';
+  String _nomDeck = '';
 
   void recupCard() async {
     var response = await _apiYGO.getCardById(_value);
@@ -92,7 +95,10 @@ class IdPageState extends State<IdPage> {
             child: Text('To your collection'),
           ),
           SimpleDialogOption(
-            onPressed: buildDecksChoice,
+            onPressed: () {
+              Navigator.pop(context);
+              getDecks();
+            },
             child: Text('To one of your decks'),
           ),
         ],
@@ -100,11 +106,80 @@ class IdPageState extends State<IdPage> {
     );
   }
 
-  void buildDecksChoice() {
+  void getDecks() async {
+    var decks = await _apiAcc.getDecks();
+    buildDecksChoice(decks);
+  }
+
+  Future<String?> buildDecksChoice(var decks) {
+    return showDialog<String>(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) => SimpleDialog(
+        title: const Text('Choose a deck'),
+        children: <Widget>[
+          SimpleDialogOption(
+            onPressed: formCreateDeck,
+            child: Text('Create a new deck'),
+          ),
+          SimpleDialogOption(
+            onPressed: () => null,
+            child: Text('To one of your decks'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<String?> formCreateDeck() {
+    return showDialog<String>(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Enter a name'),
+        content: Form(
+          key: _formKeyDeck,
+          child: Column(
+            children: [
+              Container(
+                width: MediaQuery.of(context).size.width * 0.8,
+                child: TextFormField(
+                  decoration: const InputDecoration(labelText: "Name"),
+                  validator: (valeur) {
+                    if (valeur == null || valeur.isEmpty) {
+                      return 'Please enter a name';
+                    } else {
+                      _nomDeck = valeur.toString();
+                    }
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                child: ElevatedButton(
+                  onPressed: () {
+                    if (_formKeyDeck.currentState!.validate()) {
+                      createDeck();
+                    }
+                  },
+                  child: const Text("Valid"),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void saveToDecks(int id) {
+    print('coucou');
     Navigator.pop(context);
   }
 
-  void saveToDecks() {
+  void createDeck() async {
+    String uriuser = await _apiAcc.getUriUser();
+    var response = await _apiAcc.postDeck(_nomDeck, uriuser);
     Navigator.pop(context);
   }
 
@@ -114,12 +189,10 @@ class IdPageState extends State<IdPage> {
     String uriUser = await _apiAcc.getUriUser();
     if (await _apiAcc.checkCollecByUriUser(uriUser) == false) {
       var postCollec = await _apiAcc.postCollec(uriUser);
-      print('Post Collec: ' + postCollec.statusCode.toString());
     }
     int idCollec = await _apiAcc.getCollecIdByUriUser(uriUser);
     List<dynamic> listCards = await _apiAcc.getListCardsFromCollec(idCollec);
     var patch = await _apiAcc.patchCollecAddCard(idCollec, listCards, uriCard);
-    print('Patch Collec: ' + patch.statusCode.toString());
     Navigator.pop(context);
   }
 

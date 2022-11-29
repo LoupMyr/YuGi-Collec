@@ -11,7 +11,6 @@ class ApiYGO {
   Future<http.Response> getCardsByType(value) async {
     String url = 'https://db.ygoprodeck.com/api/v7/cardinfo.php?type=$value';
     return await http.get(Uri.parse(url));
-
   }
 
   Future<http.Response> getCardsByLevel(value) async {
