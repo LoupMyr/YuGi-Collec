@@ -15,9 +15,9 @@ class CollectionPage extends StatefulWidget {
 
 class CollectionPageState extends State<CollectionPage> {
   var _cards;
-  ApiAccount _apiAcc = ApiAccount();
-  ApiYGO _apiYgo = ApiYGO();
-  List<String> _tabUrl = [];
+  final ApiAccount _apiAcc = ApiAccount();
+  final ApiYGO _apiYgo = ApiYGO();
+  final List<String> _tabUrl = [];
   int _idCollec = -1;
 
   Future<String> recupCardsOfCollec() async {
@@ -25,9 +25,10 @@ class CollectionPageState extends State<CollectionPage> {
     String uriUser = await _apiAcc.getUriUser();
     _idCollec = await _apiAcc.getCollecIdByUriUser(uriUser);
     _cards = await _apiAcc.getListCardsFromCollec(_idCollec);
+
     for (int i = 0; i < _cards.length; i++) {
       List<String> temp = _cards[i].split('/');
-      int longeur = _cards[i].split('/').length;
+      int longeur = temp.length;
       int idCardSrv = int.parse(temp[longeur - 1]);
 
       var cardSrv = await _apiAcc.getCardById(idCardSrv);
@@ -123,7 +124,6 @@ class CollectionPageState extends State<CollectionPage> {
   Future<void> deleteCard(int id) async {
     _cards.removeAt(id);
     var patch = await _apiAcc.patchCollecRemoveCard(_idCollec, _cards);
-    print(patch.statusCode);
     setState(() {
       _cards;
       buildCards();

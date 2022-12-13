@@ -1,6 +1,4 @@
 import 'dart:developer';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:yugioh_api/class/api_account.dart';
 
@@ -25,15 +23,15 @@ class InscriptionPageState extends State<InscriptionPage> {
     log(response.statusCode.toString());
     if (response.statusCode == 201) {
       Navigator.pushReplacementNamed(context, '/routeConnexion');
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Account create'),
       ));
     } else if (response.statusCode == 422) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Login already in used'),
       ));
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Server error'),
       ));
     }
@@ -46,12 +44,12 @@ class InscriptionPageState extends State<InscriptionPage> {
         centerTitle: true,
         title: Text(widget.title),
         leading: Padding(
-            padding: EdgeInsets.only(right: 20.0),
+            padding: const EdgeInsets.only(right: 20.0),
             child: GestureDetector(
               onTap: () {
                 Navigator.pushReplacementNamed(context, '/routeConnexion');
               },
-              child: Icon(
+              child: const Icon(
                 Icons.arrow_back,
                 size: 26.0,
               ),
@@ -64,7 +62,7 @@ class InscriptionPageState extends State<InscriptionPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              Container(
+              SizedBox(
                 width: MediaQuery.of(context).size.width * 0.8,
                 child: TextFormField(
                   decoration: const InputDecoration(labelText: "Login"),
@@ -77,7 +75,7 @@ class InscriptionPageState extends State<InscriptionPage> {
                   },
                 ),
               ),
-              Container(
+              SizedBox(
                 width: MediaQuery.of(context).size.width * 0.8,
                 child: TextFormField(
                   obscureText: true,
@@ -91,7 +89,7 @@ class InscriptionPageState extends State<InscriptionPage> {
                   },
                 ),
               ),
-              Container(
+              SizedBox(
                 width: MediaQuery.of(context).size.width * 0.8,
                 child: TextFormField(
                   obscureText: true,

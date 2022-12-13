@@ -16,7 +16,7 @@ class ConnexionPageState extends State<ConnexionPage> {
   final _formKey = GlobalKey<FormState>();
   String _login = '';
   String _mdp = '';
-  ApiAccount _apiAcc = ApiAccount();
+  final ApiAccount _apiAcc = ApiAccount();
 
   void connect() async {
     var response = await _apiAcc.getToken(_login, _mdp);
@@ -68,7 +68,7 @@ class ConnexionPageState extends State<ConnexionPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              Container(
+              SizedBox(
                 width: MediaQuery.of(context).size.width * 0.8,
                 child: TextFormField(
                   decoration: const InputDecoration(labelText: "Login"),
@@ -81,7 +81,7 @@ class ConnexionPageState extends State<ConnexionPage> {
                   },
                 ),
               ),
-              Container(
+              SizedBox(
                 width: MediaQuery.of(context).size.width * 0.8,
                 child: TextFormField(
                   obscureText: true,

@@ -1,5 +1,4 @@
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:yugioh_api/class/api_account.dart';
@@ -20,18 +19,18 @@ class LevelPage extends StatefulWidget {
 class LevelPageState extends State<LevelPage> {
   final _formKey = GlobalKey<FormState>();
   String _value = '';
-  ApiYGO _apiYGO = ApiYGO();
-  ApiAccount _apiAcc = ApiAccount();
+  final ApiYGO _apiYGO = ApiYGO();
+  final ApiAccount _apiAcc = ApiAccount();
   var _cards;
-  List<Widget> _tabChildren = [];
+  final List<Widget> _tabChildren = [];
   double _height = 0;
-  Widget _widgetError = Text('');
+  Widget _widgetError = const Text('');
 
   void recupCards() async {
     var response = await _apiYGO.getCardsByLevel(_value);
     if (response.statusCode == 200) {
       _cards = convert.jsonDecode(response.body);
-      _widgetError = Text('');
+      _widgetError = const Text('');
       buildCards();
     } else {
       buildError();
@@ -55,7 +54,7 @@ class LevelPageState extends State<LevelPage> {
       if (_cards['data'][i]['level'] == null) {
         lvl = 'none';
       }
-      _tabChildren.add(Container(
+      _tabChildren.add(SizedBox(
         child: Column(
           children: <Widget>[
             ElevatedButton(
@@ -71,18 +70,18 @@ class LevelPageState extends State<LevelPage> {
               ),
             ),
             Text(
-              'Name: ' + _cards['data'][i]['name'],
+              'Name: ${_cards['data'][i]['name']}',
               style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold, /*overflow: TextOverflow.ellipsis*/
               ),
             ),
             Text(
-              'Type: ' + _cards['data'][i]['type'],
+              'Type:  ${_cards['data'][i]['type']}',
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             Text(
-              'Level: ' + lvl,
+              'Level: $lvl',
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ],
@@ -104,11 +103,11 @@ class LevelPageState extends State<LevelPage> {
         children: <Widget>[
           SimpleDialogOption(
             onPressed: () => saveToCollection(numCard),
-            child: Text('To your collection'),
+            child: const Text('To your collection'),
           ),
           SimpleDialogOption(
             onPressed: buildDecksChoice,
-            child: Text('To one of your decks'),
+            child: const Text('To one of your decks'),
           ),
         ],
       ),
@@ -128,13 +127,11 @@ class LevelPageState extends State<LevelPage> {
     String uriCard = await _apiAcc.getUriCard(numCard);
     String uriUser = await _apiAcc.getUriUser();
     if (await _apiAcc.checkCollecByUriUser(uriUser) == false) {
-      var postCollec = await _apiAcc.postCollec(uriUser);
-      print('Post Collec: ' + postCollec.statusCode.toString());
+      await _apiAcc.postCollec(uriUser);
     }
     int idCollec = await _apiAcc.getCollecIdByUriUser(uriUser);
     List<dynamic> listCards = await _apiAcc.getListCardsFromCollec(idCollec);
     var patch = await _apiAcc.patchCollecAddCard(idCollec, listCards, uriCard);
-    print('Patch Collec: ' + patch.statusCode.toString());
     Navigator.pop(context);
   }
 
@@ -160,11 +157,11 @@ class LevelPageState extends State<LevelPage> {
                   autoPlay: true,
                   autoPlayCurve: Curves.easeInOutCirc,
                   enableInfiniteScroll: true,
-                  autoPlayAnimationDuration: Duration(seconds: 5),
+                  autoPlayAnimationDuration: const Duration(seconds: 5),
                   viewportFraction: 0.8,
                 ),
               ),
-              Container(
+              SizedBox(
                 child: Form(
                   key: _formKey,
                   child: Column(
@@ -206,7 +203,7 @@ class LevelPageState extends State<LevelPage> {
       ),
       bottomNavigationBar: BottomAppBar(
         color: Theme.of(context).primaryColor,
-        child: Container(
+        child: SizedBox(
           child: Row(
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.spaceAround,

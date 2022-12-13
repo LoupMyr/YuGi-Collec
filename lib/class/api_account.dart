@@ -6,9 +6,9 @@ import 'dart:convert' as convert;
 import 'package:yugioh_api/class/local.dart';
 
 class ApiAccount {
-  String _login = localLogin;
-  String _mdp = localPassword;
-  String _token = localToken;
+  final String _login = localLogin;
+  final String _mdp = localPassword;
+  final String _token = localToken;
 
   // Actions sur User / token
   Future<http.Response> createAccount(String login, String mdp) {
@@ -55,6 +55,14 @@ class ApiAccount {
     String url = 'https://s3-4428.nuage-peda.fr/yugiohApi/public/api/users';
     var response = await http.get(Uri.parse(url));
     return convert.jsonDecode(response.body);
+  }
+
+  Future<dynamic> getUserById(int id) async {
+    String url =
+        'http://s3-4428.nuage-peda.fr/yugiohApi/public/api/users/${id.toString()}';
+    var response = await http.get(Uri.parse(url));
+    var result = convert.jsonDecode(response.body);
+    return result;
   }
 
   Future<String> getUriUser() async {
@@ -104,12 +112,6 @@ class ApiAccount {
       }
     }
     return uri;
-  }
-
-  Future<int> getCardIdByUri() async {
-    var cards = await getCards();
-
-    return -1;
   }
 
   Future<List<dynamic>> getListCardsFromCollec(idCollec) async {
@@ -217,5 +219,26 @@ class ApiAccount {
     var response = await http.get(Uri.parse(url));
     var data = convert.jsonDecode(response.body);
     return data;
+  }
+
+  Future<http.Response> patchDeckAddCard(
+      int id, List<dynamic> listCards, String cardUri) async {
+    listCards.add(cardUri);
+    var json = convert.jsonEncode(<String, dynamic>{"cartes": listCards});
+    return await http.patch(
+        Uri.parse('https://s3-4428.nuage-peda.fr/yugiohApi/public/api/decks/' +
+            id.toString()),
+        headers: <String, String>{
+          'Accept': 'application/ld+json',
+          'Content-Type': 'application/merge-patch+json',
+        },
+        body: json);
+  }
+
+  Future<dynamic> getDeckById(int id) async {
+    String url = 'https://s3-4428.nuage-peda.fr/yugiohApi/public/api/decks/' +
+        id.toString();
+    var response = await http.get(Uri.parse(url));
+    return convert.jsonDecode(response.body);
   }
 }

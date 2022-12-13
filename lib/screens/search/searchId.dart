@@ -1,5 +1,3 @@
-import 'dart:convert';
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:yugioh_api/class/api_account.dart';
@@ -22,8 +20,8 @@ class IdPageState extends State<IdPage> {
   final _formKey = GlobalKey<FormState>();
   final _formKeyDeck = GlobalKey<FormState>();
   int _value = -1;
-  ApiYGO _apiYGO = ApiYGO();
-  ApiAccount _apiAcc = ApiAccount();
+  final ApiYGO _apiYGO = ApiYGO();
+  final ApiAccount _apiAcc = ApiAccount();
   var _card;
   Widget _widgetCard = Container();
   String _numCard = '';
@@ -67,15 +65,15 @@ class IdPageState extends State<IdPage> {
             ),
           ),
           Text(
-            'Name: ' + _card['data'][0]['name'],
+            'Name: ${_card['data'][0]['name']}',
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           Text(
-            'Type: ' + _card['data'][0]['type'],
+            'Type: ${_card['data'][0]['type']}',
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           Text(
-            'Level: ' + _card['data'][0]['level'].toString(),
+            'Level: ${_card['data'][0]['level']}',
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
         ],
@@ -92,14 +90,14 @@ class IdPageState extends State<IdPage> {
         children: <Widget>[
           SimpleDialogOption(
             onPressed: saveToCollection,
-            child: Text('To your collection'),
+            child: const Text('To your collection'),
           ),
           SimpleDialogOption(
             onPressed: () {
               Navigator.pop(context);
               getDecks();
             },
-            child: Text('To one of your decks'),
+            child: const Text('To one of your decks'),
           ),
         ],
       ),
@@ -120,11 +118,11 @@ class IdPageState extends State<IdPage> {
         children: <Widget>[
           SimpleDialogOption(
             onPressed: formCreateDeck,
-            child: Text('Create a new deck'),
+            child: const Text('Create a new deck'),
           ),
           SimpleDialogOption(
             onPressed: () => null,
-            child: Text('To one of your decks'),
+            child: const Text('To one of your decks'),
           ),
         ],
       ),
@@ -141,7 +139,7 @@ class IdPageState extends State<IdPage> {
           key: _formKeyDeck,
           child: Column(
             children: [
-              Container(
+              SizedBox(
                 width: MediaQuery.of(context).size.width * 0.8,
                 child: TextFormField(
                   decoration: const InputDecoration(labelText: "Name"),
@@ -172,14 +170,21 @@ class IdPageState extends State<IdPage> {
     );
   }
 
-  void saveToDecks(int id) {
-    print('coucou');
+  void saveToDeck(int id) async {
+    await _apiAcc.postCard(_numCard);
+    String uriCard = await _apiAcc.getUriCard(_numCard);
+    var deck = await _apiAcc.getDeckById(id);
+    List<dynamic> listCards = deck['cartes'];
+    var patch = await _apiAcc.patchDeckAddCard(id, listCards, uriCard);
     Navigator.pop(context);
   }
 
   void createDeck() async {
     String uriuser = await _apiAcc.getUriUser();
     var response = await _apiAcc.postDeck(_nomDeck, uriuser);
+    var body = convert.json.decode(response.body);
+    saveToDeck(body['id']);
+
     Navigator.pop(context);
   }
 
@@ -188,7 +193,7 @@ class IdPageState extends State<IdPage> {
     String uriCard = await _apiAcc.getUriCard(_numCard);
     String uriUser = await _apiAcc.getUriUser();
     if (await _apiAcc.checkCollecByUriUser(uriUser) == false) {
-      var postCollec = await _apiAcc.postCollec(uriUser);
+      await _apiAcc.postCollec(uriUser);
     }
     int idCollec = await _apiAcc.getCollecIdByUriUser(uriUser);
     List<dynamic> listCards = await _apiAcc.getListCardsFromCollec(idCollec);
@@ -210,7 +215,7 @@ class IdPageState extends State<IdPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               _widgetCard,
-              Container(
+              SizedBox(
                 child: Form(
                   key: _formKey,
                   child: Column(
@@ -252,7 +257,7 @@ class IdPageState extends State<IdPage> {
       ),
       bottomNavigationBar: BottomAppBar(
         color: Theme.of(context).primaryColor,
-        child: Container(
+        child: SizedBox(
           child: Row(
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.spaceAround,

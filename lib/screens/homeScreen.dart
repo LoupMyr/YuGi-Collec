@@ -10,11 +10,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
-  final _formKey = GlobalKey<FormState>();
-  int _value = -1;
-  var _card;
-  Widget _widgetCard = Container();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,7 +30,7 @@ class HomeScreenState extends State<HomeScreen> {
                   width: 100,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
+                    children: const <Widget>[
                       Text('Card By Id', textAlign: TextAlign.center),
                     ],
                   ),
@@ -51,7 +46,7 @@ class HomeScreenState extends State<HomeScreen> {
                   width: 100,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
+                    children: const <Widget>[
                       Text('Card By Type', textAlign: TextAlign.center),
                     ],
                   ),
@@ -67,7 +62,7 @@ class HomeScreenState extends State<HomeScreen> {
                   width: 100,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
+                    children: const <Widget>[
                       Text('Card By Level', textAlign: TextAlign.center),
                     ],
                   ),
@@ -84,7 +79,7 @@ class HomeScreenState extends State<HomeScreen> {
                   width: 100,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
+                    children: const <Widget>[
                       Text('My collection', textAlign: TextAlign.center),
                     ],
                   ),
@@ -100,7 +95,7 @@ class HomeScreenState extends State<HomeScreen> {
                   width: 100,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
+                    children: const <Widget>[
                       Text('My decks', textAlign: TextAlign.center),
                     ],
                   ),

@@ -1,6 +1,4 @@
-import 'dart:developer';
 import 'package:http/http.dart' as http;
-import 'dart:convert' as convert;
 
 class ApiYGO {
   Future<http.Response> getCardById(value) async {

@@ -2,8 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:yugioh_api/screens/login/connexion.dart';
-import 'package:yugioh_api/screens/homeScreen.dart';
-import 'package:yugioh_api/screens/search/searchId.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -35,7 +33,7 @@ class SplashScreenState extends State<MyHomePage> {
           Container(
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
-            color: Color.fromARGB(255, 124, 0, 182),
+            color: const Color.fromARGB(255, 124, 0, 182),
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -44,7 +42,7 @@ class SplashScreenState extends State<MyHomePage> {
                   SizedBox(
                       width: MediaQuery.of(context).size.width,
                       height: MediaQuery.of(context).size.height,
-                      child: SpinKitRing(color: Colors.black, size: 150)),
+                      child: const SpinKitRing(color: Colors.black, size: 150)),
                 ],
               ),
             ),
