@@ -89,7 +89,8 @@ class HomeScreenState extends State<HomeScreen> {
                 padding: EdgeInsets.all(10),
               ),
               ElevatedButton(
-                onPressed: () => Navigator.pushNamed(context, '/routeDecks'),
+                onPressed: () =>
+                    Navigator.pushNamed(context, '/routeDecksList'),
                 child: SizedBox(
                   height: 50,
                   width: 100,

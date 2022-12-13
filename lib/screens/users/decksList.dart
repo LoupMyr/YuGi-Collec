@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:yugioh_api/class/api_account.dart';
 
-class DeckPage extends StatefulWidget {
-  const DeckPage({super.key, required this.title});
+class DecksListPage extends StatefulWidget {
+  const DecksListPage({super.key, required this.title});
 
   final String title;
 
   @override
-  DeckPageState createState() => DeckPageState();
+  DecksListPageState createState() => DecksListPageState();
 }
 
-class DeckPageState extends State<DeckPage> {
+class DecksListPageState extends State<DecksListPage> {
   final ApiAccount _apiAcc = ApiAccount();
   final List<dynamic> _listDecks = [];
 
@@ -52,7 +52,8 @@ class DeckPageState extends State<DeckPage> {
               borderRadius: const BorderRadius.all(Radius.circular(10)),
             ),
             child: ElevatedButton(
-              onPressed: () => null,
+              onPressed: () => Navigator.pushNamed(context, "/routeDeck",
+                  arguments: _listDecks[i]['id']),
               child: SizedBox(
                 width: MediaQuery.of(context).size.width * 0.87,
                 height: MediaQuery.of(context).size.width * 0.18,

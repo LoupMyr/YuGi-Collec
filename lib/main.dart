@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:yugioh_api/screens/users/collection.dart';
 import 'package:yugioh_api/screens/login/connexion.dart';
-import 'package:yugioh_api/screens/users/decks.dart';
+import 'package:yugioh_api/screens/users/deck.dart';
+import 'package:yugioh_api/screens/users/decksList.dart';
 import 'package:yugioh_api/screens/homeScreen.dart';
 import 'package:yugioh_api/screens/login/inscription.dart';
 import 'package:yugioh_api/screens/search/searchId.dart';
@@ -40,8 +41,10 @@ class MyApp extends StatelessWidget {
               const InscriptionPage(title: "Yu-Gi-Oh! - Sign up"),
           '/routeCollection': (BuildContext context) =>
               const CollectionPage(title: "Yu-Gi-Oh! - My Collection"),
-          '/routeDecks': (BuildContext context) =>
-              const DeckPage(title: "Yu-Gi-Oh! - My Decks"),
+          '/routeDecksList': (BuildContext context) =>
+              const DecksListPage(title: "Yu-Gi-Oh! - My Decks"),
+          '/routeDeck': (BuildContext context) =>
+              DeckPage(title: 'Yu-Gi-Oh - Deck')
         });
   }
 }
