@@ -235,10 +235,43 @@ class ApiAccount {
         body: json);
   }
 
+  Future<http.Response> patchDeckEditName(
+      int id, String name) async {
+    var json = convert.jsonEncode(<String, dynamic>{"nom": name});
+    return await http.patch(
+        Uri.parse('https://s3-4428.nuage-peda.fr/yugiohApi/public/api/decks/' +
+            id.toString()),
+        headers: <String, String>{
+          'Accept': 'application/ld+json',
+          'Content-Type': 'application/merge-patch+json',
+        },
+        body: json);
+  }
+
+  Future<http.Response> patchDeckRemoveCard(
+      int id, List<dynamic> listCards) async {
+    var json = convert.jsonEncode(<String, dynamic>{"cartes": listCards});
+    return await http.patch(
+        Uri.parse(
+            'https://s3-4428.nuage-peda.fr/yugiohApi/public/api/decks/' +
+                id.toString()),
+        headers: <String, String>{
+          'Accept': 'application/ld+json',
+          'Content-Type': 'application/merge-patch+json',
+        },
+        body: json);
+  }
+
   Future<dynamic> getDeckById(int id) async {
     String url = 'https://s3-4428.nuage-peda.fr/yugiohApi/public/api/decks/' +
         id.toString();
     var response = await http.get(Uri.parse(url));
     return convert.jsonDecode(response.body);
+  }
+
+  Future<http.Response> deleteDeck(int id) async{
+    String url = 'https://s3-4428.nuage-peda.fr/yugiohApi/public/api/decks/' +
+        id.toString();
+    return await http.delete(Uri.parse(url));
   }
 }

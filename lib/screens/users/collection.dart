@@ -133,44 +133,44 @@ class CollectionPageState extends State<CollectionPage> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: recupCardsOfCollec(),
-        builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-          List<Widget> children;
-          if (snapshot.hasData) {
-            children = <Widget>[
-              const Padding(padding: EdgeInsets.symmetric(vertical: 10)),
-              Row(
-                children: <Widget>[
-                  buildCards(),
-                ],
+      return FutureBuilder(
+          future: recupCardsOfCollec(),
+          builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+            List<Widget> children;
+            if (snapshot.hasData) {
+              children = <Widget>[
+                const Padding(padding: EdgeInsets.symmetric(vertical: 10)),
+                Row(
+                  children: <Widget>[
+                    buildCards(),
+                  ],
+                ),
+              ];
+            } else if (snapshot.hasError) {
+              children = <Widget>[
+                const SpinKitWave(
+                  color: Colors.red,
+                )
+              ];
+            } else {
+              children = <Widget>[
+                const SpinKitWave(
+                  color: Colors.orange,
+                  size: 100,
+                )
+              ];
+            }
+            return Scaffold(
+              appBar: AppBar(
+                centerTitle: true,
+                title: Text(widget.title),
               ),
-            ];
-          } else if (snapshot.hasError) {
-            children = <Widget>[
-              const SpinKitWave(
-                color: Colors.red,
-              )
-            ];
-          } else {
-            children = <Widget>[
-              const SpinKitWave(
-                color: Colors.orange,
-                size: 100,
-              )
-            ];
-          }
-          return Scaffold(
-            appBar: AppBar(
-              centerTitle: true,
-              title: Text(widget.title),
-            ),
-            body: Center(
-              child: SingleChildScrollView(
-                child: Column(children: children),
+              body: Center(
+                child: SingleChildScrollView(
+                  child: Column(children: children),
+                ),
               ),
-            ),
-          );
-        });
-  }
+            );
+          });
+    }
 }

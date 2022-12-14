@@ -9,6 +9,7 @@ import 'package:yugioh_api/screens/search/searchId.dart';
 import 'package:yugioh_api/screens/search/searchLevel.dart';
 import 'package:yugioh_api/screens/search/searchType.dart';
 import 'package:yugioh_api/screens/splashscreen.dart';
+import 'package:yugioh_api/screens/users/formDeck.dart';
 
 void main() {
   runApp(const MyApp());
@@ -44,7 +45,9 @@ class MyApp extends StatelessWidget {
           '/routeDecksList': (BuildContext context) =>
               const DecksListPage(title: "Yu-Gi-Oh! - My Decks"),
           '/routeDeck': (BuildContext context) =>
-              DeckPage(title: 'Yu-Gi-Oh - Deck')
+              DeckPage(title: 'Yu-Gi-Oh - Deck'),
+          '/routeFormDeck': (BuildContext context) =>
+              FormDeckPage(title: 'Yu-Gi-Oh - Create Deck'),
         });
   }
 }

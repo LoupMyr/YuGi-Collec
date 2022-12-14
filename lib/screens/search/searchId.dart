@@ -93,9 +93,9 @@ class IdPageState extends State<IdPage> {
             child: const Text('To your collection'),
           ),
           SimpleDialogOption(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(context);
-              getDecks();
+              await buildDecksChoice();
             },
             child: const Text('To one of your decks'),
           ),
@@ -104,12 +104,9 @@ class IdPageState extends State<IdPage> {
     );
   }
 
-  void getDecks() async {
-    var decks = await _apiAcc.getDecks();
-    buildDecksChoice(decks);
-  }
 
-  Future<String?> buildDecksChoice(var decks) {
+  Future<String?> buildDecksChoice() async {
+    var decks = await _apiAcc.getDecks();
     return showDialog<String>(
       context: context,
       barrierDismissible: true,
@@ -121,10 +118,67 @@ class IdPageState extends State<IdPage> {
             child: const Text('Create a new deck'),
           ),
           SimpleDialogOption(
-            onPressed: () => null,
-            child: const Text('To one of your decks'),
+            onPressed: getDecksList,
+            child: const Text('To an existing deck'),
           ),
         ],
+      ),
+    );
+  }
+
+  void getDecksList() async{
+    String uriUser = await _apiAcc.getUriUser();
+    List<String> temp = uriUser.split('/');
+    int longeur = temp.length;
+    int idUser = int.parse(temp[longeur - 1]);
+    var user = await _apiAcc.getUserById(idUser);
+    List<dynamic> decks = user['decks'];
+    List<dynamic> listDecks = [];
+    for (int i = 0; i < decks.length; i++) {
+      List<String> temp = decks[i].split('/');
+      int longeur = temp.length;
+      int idDeck = int.parse(temp[longeur - 1]);
+      listDecks.add(await _apiAcc.getDeckById(idDeck));
+    }
+    buildListDecks(listDecks);
+  }
+
+  Future<String?> buildListDecks(List<dynamic> lesDecks) {
+    List<Widget> tabChildren = [];
+    if (lesDecks.isEmpty) {
+      tabChildren.add(
+        const SizedBox(
+          child: Text('You have no deck yet, let\s create some !'),
+        ),
+      );
+    }
+    for (int i = 0; i < lesDecks.length; i++) {
+      tabChildren.add(Row(
+        children: [
+          Card(
+            elevation: 0,
+            child: ElevatedButton(
+              onPressed: () => saveToDeck(lesDecks[i]['id']),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.51,
+                height: MediaQuery.of(context).size.width * 0.05,
+                child: Center(
+                  child: Text(lesDecks[i]['nom']),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ));
+    }
+    return showDialog<String>(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Select a deck'),
+        content: Column(
+          children: tabChildren,
+        ),
       ),
     );
   }
@@ -176,6 +230,7 @@ class IdPageState extends State<IdPage> {
     var deck = await _apiAcc.getDeckById(id);
     List<dynamic> listCards = deck['cartes'];
     var patch = await _apiAcc.patchDeckAddCard(id, listCards, uriCard);
+    Navigator.pop(context);
     Navigator.pop(context);
   }
 

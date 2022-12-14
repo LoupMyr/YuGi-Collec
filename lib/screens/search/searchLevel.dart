@@ -18,6 +18,7 @@ class LevelPage extends StatefulWidget {
 
 class LevelPageState extends State<LevelPage> {
   final _formKey = GlobalKey<FormState>();
+  final _formKeyDeck = GlobalKey<FormState>();
   String _value = '';
   final ApiYGO _apiYGO = ApiYGO();
   final ApiAccount _apiAcc = ApiAccount();
@@ -25,6 +26,7 @@ class LevelPageState extends State<LevelPage> {
   final List<Widget> _tabChildren = [];
   double _height = 0;
   Widget _widgetError = const Text('');
+  String _nomDeck = '';
 
   void recupCards() async {
     var response = await _apiYGO.getCardsByLevel(_value);
@@ -106,7 +108,10 @@ class LevelPageState extends State<LevelPage> {
             child: const Text('To your collection'),
           ),
           SimpleDialogOption(
-            onPressed: buildDecksChoice,
+            onPressed: () async {
+              Navigator.pop(context);
+              await buildDecksChoice(numCard);
+            },
             child: const Text('To one of your decks'),
           ),
         ],
@@ -114,11 +119,139 @@ class LevelPageState extends State<LevelPage> {
     );
   }
 
-  void buildDecksChoice() {
+  Future<String?> buildDecksChoice(String numCard) async {
+    return showDialog<String>(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) => SimpleDialog(
+        title: const Text('Choose a deck'),
+        children: <Widget>[
+          SimpleDialogOption(
+            onPressed: ()=>formCreateDeck(numCard),
+            child: const Text('Create a new deck'),
+          ),
+          SimpleDialogOption(
+            onPressed: () => getDecksList(numCard),
+            child: const Text('To an existing deck'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void getDecksList(String numCard) async{
+    String uriUser = await _apiAcc.getUriUser();
+    List<String> temp = uriUser.split('/');
+    int longeur = temp.length;
+    int idUser = int.parse(temp[longeur - 1]);
+    var user = await _apiAcc.getUserById(idUser);
+    List<dynamic> decks = user['decks'];
+    List<dynamic> listDecks = [];
+    for (int i = 0; i < decks.length; i++) {
+      List<String> temp = decks[i].split('/');
+      int longeur = temp.length;
+      int idDeck = int.parse(temp[longeur - 1]);
+      listDecks.add(await _apiAcc.getDeckById(idDeck));
+    }
+    buildListDecks(listDecks, numCard);
+  }
+
+  Future<String?> buildListDecks(List<dynamic> lesDecks, String numCard) {
+    List<Widget> tabChildren = [];
+    if (lesDecks.isEmpty) {
+      tabChildren.add(
+        const SizedBox(
+          child: Text('You have no deck yet, let\s create some !'),
+        ),
+      );
+    }
+    for (int i = 0; i < lesDecks.length; i++) {
+      tabChildren.add(Row(
+        children: [
+          Card(
+            elevation: 0,
+            child: ElevatedButton(
+              onPressed: () => saveToDeck(lesDecks[i]['id'], numCard),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.51,
+                height: MediaQuery.of(context).size.width * 0.05,
+                child: Center(
+                  child: Text(lesDecks[i]['nom']),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ));
+    }
+    return showDialog<String>(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Select a deck'),
+        content: Column(
+          children: tabChildren,
+        ),
+      ),
+    );
+  }
+
+  Future<String?> formCreateDeck(String numCard) {
+    return showDialog<String>(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Enter a name'),
+        content: Form(
+          key: _formKeyDeck,
+          child: Column(
+            children: [
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.8,
+                child: TextFormField(
+                  decoration: const InputDecoration(labelText: "Name"),
+                  validator: (valeur) {
+                    if (valeur == null || valeur.isEmpty) {
+                      return 'Please enter a name';
+                    } else {
+                      _nomDeck = valeur.toString();
+                    }
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                child: ElevatedButton(
+                  onPressed: () {
+                    if (_formKeyDeck.currentState!.validate()) {
+                      createDeck(numCard);
+                    }
+                  },
+                  child: const Text("Valid"),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void saveToDeck(int id, String numCard) async {
+    await _apiAcc.postCard(numCard);
+    String uriCard = await _apiAcc.getUriCard(numCard);
+    var deck = await _apiAcc.getDeckById(id);
+    List<dynamic> listCards = deck['cartes'];
+    var patch = await _apiAcc.patchDeckAddCard(id, listCards, uriCard);
     Navigator.pop(context);
   }
 
-  void saveToDecks() {
+  void createDeck(String numCard) async {
+    String uriuser = await _apiAcc.getUriUser();
+    var response = await _apiAcc.postDeck(_nomDeck, uriuser);
+    var body = convert.json.decode(response.body);
+    saveToDeck(body['id'], numCard);
+
     Navigator.pop(context);
   }
 
@@ -131,7 +264,7 @@ class LevelPageState extends State<LevelPage> {
     }
     int idCollec = await _apiAcc.getCollecIdByUriUser(uriUser);
     List<dynamic> listCards = await _apiAcc.getListCardsFromCollec(idCollec);
-    var patch = await _apiAcc.patchCollecAddCard(idCollec, listCards, uriCard);
+    await _apiAcc.patchCollecAddCard(idCollec, listCards, uriCard);
     Navigator.pop(context);
   }
 

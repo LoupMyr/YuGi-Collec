@@ -13,9 +13,12 @@ class DecksListPage extends StatefulWidget {
 
 class DecksListPageState extends State<DecksListPage> {
   final ApiAccount _apiAcc = ApiAccount();
-  final List<dynamic> _listDecks = [];
+  List<dynamic> _listDecks = [];
+  final _formKeyDeckName = GlobalKey<FormState>();
+  String _nomDeck = '';
 
   Future<String> recupDecks() async {
+    _listDecks = [];
     String uriUser = await _apiAcc.getUriUser();
     List<String> temp = uriUser.split('/');
     int longeur = temp.length;
@@ -36,7 +39,7 @@ class DecksListPageState extends State<DecksListPage> {
     if (_listDecks.isEmpty) {
       tabChildren.add(
         const SizedBox(
-          child: Text('You have no deck yet, let\s create some !'),
+          child: Text('You have no deck yet, let\s create some !', overflow: TextOverflow.ellipsis),
         ),
       );
     }
@@ -45,29 +48,117 @@ class DecksListPageState extends State<DecksListPage> {
         children: [
           Card(
             elevation: 0,
-            shape: RoundedRectangleBorder(
-              side: BorderSide(
-                color: Theme.of(context).colorScheme.outline,
-              ),
-              borderRadius: const BorderRadius.all(Radius.circular(10)),
-            ),
             child: ElevatedButton(
               onPressed: () => Navigator.pushNamed(context, "/routeDeck",
                   arguments: _listDecks[i]['id']),
               child: SizedBox(
-                width: MediaQuery.of(context).size.width * 0.87,
-                height: MediaQuery.of(context).size.width * 0.18,
+                width: MediaQuery.of(context).size.width * 0.65,
+                height: MediaQuery.of(context).size.width * 0.12,
                 child: Center(
                   child: Text(_listDecks[i]['nom']),
                 ),
               ),
             ),
           ),
+          IconButton(
+              onPressed: () => deleteDeckMenu(_listDecks[i]['id']),
+              icon: Icon(Icons.delete)),
+          IconButton(
+              onPressed: () => editNameDeckMenu(_listDecks[i]['id']),
+              icon: Icon(Icons.edit))
         ],
       ));
     }
     return Column(
       children: tabChildren,
+    );
+  }
+
+  Future<String?> deleteDeckMenu(int id) {
+    return showDialog<String>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Delete deck'),
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: const <Widget>[
+              Text('Are you sure you want to delete this deck ?'),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => deleteDeck(id),
+            child: const Text('Yes'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> deleteDeck(int idDeck) async {
+    await _apiAcc.deleteDeck(idDeck);
+    await recupDecks();
+    setState(() {
+      _listDecks;
+      buildDecks();
+    });
+    Navigator.of(context).pop();
+  }
+
+  Future<void> editDeckName(int idDeck) async {
+    await _apiAcc.patchDeckEditName(idDeck, _nomDeck);
+    await recupDecks();
+    setState(() {
+      _listDecks;
+      buildDecks();
+    });
+    Navigator.of(context).pop();
+  }
+
+  Future<String?> editNameDeckMenu(int idDeck) {
+    return showDialog<String>(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Edit name'),
+        content: Form(
+          key: _formKeyDeckName,
+          child: Column(
+            children: [
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.8,
+                child: TextFormField(
+                  decoration: const InputDecoration(labelText: "Name"),
+                  validator: (valeur) {
+                    if (valeur == null || valeur.isEmpty) {
+                      return 'Please enter a name';
+                    } else {
+                      _nomDeck = valeur.toString();
+                    }
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                child: ElevatedButton(
+                  onPressed: () {
+                    if (_formKeyDeckName.currentState!.validate()) {
+                      editDeckName(idDeck);
+                    }
+                  },
+                  child: const Text("Valid"),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -79,9 +170,9 @@ class DecksListPageState extends State<DecksListPage> {
           List<Widget> children;
           if (snapshot.hasData) {
             children = <Widget>[
-              const Padding(padding: EdgeInsets.symmetric(vertical: 10)),
               Row(
                 children: <Widget>[
+                  const Padding(padding: EdgeInsets.symmetric(vertical: 10)),
                   buildDecks(),
                 ],
               ),
@@ -105,9 +196,28 @@ class DecksListPageState extends State<DecksListPage> {
               centerTitle: true,
               title: Text(widget.title),
             ),
-            body: Center(
-              child: SingleChildScrollView(
-                child: Column(children: children),
+            body: SingleChildScrollView(
+              child: Column(
+                children: <Widget>[
+                  Card(
+                    child: ElevatedButton(
+                      onPressed: () =>
+                          Navigator.pushNamed(context, "/routeFormDeck"),
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.65,
+                        height: MediaQuery.of(context).size.width * 0.12,
+                        child: const Center(
+                          child: Text('Create a new Deck'),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Center(
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: children),
+                  ),
+                ],
               ),
             ),
           );

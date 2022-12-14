@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:yugioh_api/class/api_account.dart';
 import 'package:yugioh_api/class/local.dart';
@@ -105,7 +106,7 @@ class ConnexionPageState extends State<ConnexionPage> {
                   },
                   child: const Text("Sign in"),
                 ),
-              ),
+              )
             ],
           ),
         ),

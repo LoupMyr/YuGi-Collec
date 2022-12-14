@@ -1,11 +1,11 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:yugioh_api/class/api_account.dart';
 import 'package:yugioh_api/class/api_yugioh.dart';
+import 'dart:convert' as convert;
 
 class DeckPage extends StatefulWidget {
-  DeckPage({super.key, required this.title});
+  const DeckPage({super.key, required this.title});
 
   final String title;
   @override
@@ -13,14 +13,25 @@ class DeckPage extends StatefulWidget {
 }
 
 class DeckPageState extends State<DeckPage> {
-  ApiAccount _apiAcc = ApiAccount();
-  ApiYGO _apiYgo = ApiYGO();
+  final ApiAccount _apiAcc = ApiAccount();
+  final ApiYGO _apiYgo = ApiYGO();
   List<dynamic> _cards = [];
   bool recupDataBool = false;
+  final List<String> _tabUrl = [];
+  var _idDeck = -1;
 
-  void recupData(int id) async {
-    var deck = await _apiAcc.getDeckById(id);
+  void recupCards() async {
+    var deck = await _apiAcc.getDeckById(_idDeck);
     _cards = deck['cartes'];
+    for(int i = 0; i < _cards.length; i++){
+      List<String> temp = _cards[i].split('/');
+      int idCardSrv = int.parse(temp[temp.length - 1]);
+      var cardSrv = await _apiAcc.getCardById(idCardSrv);
+      var response = await _apiYgo.getCardById(cardSrv['numCarte']);
+      var cardApi = convert.jsonDecode(response.body);
+      _tabUrl.add(cardApi['data'][0]['card_images'][0]['image_url'].toString());
+
+    }
     setState(() {
       recupDataBool = true;
     });
@@ -28,12 +39,12 @@ class DeckPageState extends State<DeckPage> {
 
   Widget buildCards() {
     List<Widget> tabChildren = [];
-    if (_cards.length == 0) {
+    if (_cards.isEmpty) {
       tabChildren.add(Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: const <Widget>[
-          Text(
-              "You haven't cards in your collection yet. Lets start adding some !")
+          Text("You haven't cards in this deck yet."),
+          Text(' Lets start adding some !'),
         ],
       ));
     } else {
@@ -69,7 +80,7 @@ class DeckPageState extends State<DeckPage> {
   Widget buildImg(int id) {
     return ElevatedButton(
       onPressed: () => null,
-      onLongPress: () => null,
+      onLongPress: () => deleteMenu(id),
       style:
           ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.white)),
       child: Image(
@@ -80,9 +91,47 @@ class DeckPageState extends State<DeckPage> {
     );
   }
 
+  Future<String?> deleteMenu(int id) {
+    return showDialog<String>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Delete card'),
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: const <Widget>[
+              Text(
+                  'Are you sure you want to delete this card from your deck ?'),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => deleteCard(id),
+            child: const Text('Yes'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> deleteCard(int id) async {
+    _cards.removeAt(id);
+    await _apiAcc.patchDeckRemoveCard(_idDeck, _cards);
+    setState(() {
+      _cards;
+      buildCards();
+    });
+    Navigator.of(context).pop();
+  }
+
   @override
   Widget build(BuildContext context) {
-    var id = ModalRoute.of(context)?.settings.arguments as int;
+    _idDeck = ModalRoute.of(context)?.settings.arguments as int;
     if (recupDataBool) {
       return Scaffold(
         appBar: AppBar(
@@ -102,7 +151,7 @@ class DeckPageState extends State<DeckPage> {
         ),
       );
     } else {
-      recupData(id);
+      recupCards();
       return Scaffold(
           appBar: AppBar(
             title: Text(widget.title),
