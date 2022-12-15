@@ -173,7 +173,7 @@ class LevelPageState extends State<LevelPage> {
             child: ElevatedButton(
               onPressed: () => saveToDeck(lesDecks[i]['id'], numCard),
               child: SizedBox(
-                width: MediaQuery.of(context).size.width * 0.51,
+                width: MediaQuery.of(context).size.width * 0.45,
                 height: MediaQuery.of(context).size.width * 0.05,
                 child: Center(
                   child: Text(lesDecks[i]['nom']),

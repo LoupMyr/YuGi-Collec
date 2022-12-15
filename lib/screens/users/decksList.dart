@@ -52,7 +52,7 @@ class DecksListPageState extends State<DecksListPage> {
               onPressed: () => Navigator.pushNamed(context, "/routeDeck",
                   arguments: _listDecks[i]['id']),
               child: SizedBox(
-                width: MediaQuery.of(context).size.width * 0.65,
+                width: MediaQuery.of(context).size.width * 0.45,
                 height: MediaQuery.of(context).size.width * 0.12,
                 child: Center(
                   child: Text(_listDecks[i]['nom']),
@@ -60,9 +60,11 @@ class DecksListPageState extends State<DecksListPage> {
               ),
             ),
           ),
+          const Padding(padding: EdgeInsetsDirectional.all(5)),
           IconButton(
               onPressed: () => deleteDeckMenu(_listDecks[i]['id']),
               icon: Icon(Icons.delete)),
+          const Padding(padding: EdgeInsetsDirectional.all(5)),
           IconButton(
               onPressed: () => editNameDeckMenu(_listDecks[i]['id']),
               icon: Icon(Icons.edit))

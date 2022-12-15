@@ -1,7 +1,7 @@
 import 'package:http/http.dart' as http;
 
 class ApiYGO {
-  Future<http.Response> getCardById(value) async {
+  Future<http.Response> getCardById(dynamic value) async {
     String url = 'https://db.ygoprodeck.com/api/v7/cardinfo.php?id=$value';
     return await http.get(Uri.parse(url));
   }

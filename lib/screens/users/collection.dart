@@ -14,7 +14,7 @@ class CollectionPage extends StatefulWidget {
 }
 
 class CollectionPageState extends State<CollectionPage> {
-  var _cards;
+  var _cardsUri;
   final ApiAccount _apiAcc = ApiAccount();
   final ApiYGO _apiYgo = ApiYGO();
   final List<String> _tabUrl = [];
@@ -24,10 +24,10 @@ class CollectionPageState extends State<CollectionPage> {
     _tabUrl.clear();
     String uriUser = await _apiAcc.getUriUser();
     _idCollec = await _apiAcc.getCollecIdByUriUser(uriUser);
-    _cards = await _apiAcc.getListCardsFromCollec(_idCollec);
+    _cardsUri = await _apiAcc.getListCardsFromCollec(_idCollec);
 
-    for (int i = 0; i < _cards.length; i++) {
-      List<String> temp = _cards[i].split('/');
+    for (int i = 0; i < _cardsUri.length; i++) {
+      List<String> temp = _cardsUri[i].split('/');
       int longeur = temp.length;
       int idCardSrv = int.parse(temp[longeur - 1]);
 
@@ -41,7 +41,7 @@ class CollectionPageState extends State<CollectionPage> {
 
   Widget buildCards() {
     List<Widget> tabChildren = [];
-    if (_cards.length == 0) {
+    if (_cardsUri.length == 0) {
       tabChildren.add(Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: const <Widget>[
@@ -50,7 +50,7 @@ class CollectionPageState extends State<CollectionPage> {
         ],
       ));
     } else {
-      for (int i = 0; i < _cards.length; i = i + 2) {
+      for (int i = 0; i < _cardsUri.length; i = i + 2) {
         try {
           tabChildren.add(Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -81,14 +81,14 @@ class CollectionPageState extends State<CollectionPage> {
 
   Widget buildImg(int id) {
     return ElevatedButton(
-      onPressed: () => null,
+      onPressed: () => printCard(id),
       onLongPress: () => deleteMenu(id),
       style:
           ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.white)),
       child: Image(
         image: NetworkImage(_tabUrl[id]),
-        height: MediaQuery.of(context).size.height * 0.28,
-        width: MediaQuery.of(context).size.width * 0.28,
+        height: MediaQuery.of(context).size.height * 0.30,
+        width: MediaQuery.of(context).size.width * 0.30,
       ),
     );
   }
@@ -121,11 +121,20 @@ class CollectionPageState extends State<CollectionPage> {
     );
   }
 
+  Future<void> printCard(int id) async{
+    List<String> temp = _cardsUri[id].split('/');
+    int length = temp.length;
+    int idCardSrv = int.parse(temp[length - 1]);
+    var cardYGO = await _apiAcc.getCardById(idCardSrv);
+    Navigator.pushNamed(context, "/routeCardInfo",
+        arguments: cardYGO['numCarte']);
+  }
+
   Future<void> deleteCard(int id) async {
-    _cards.removeAt(id);
-    var patch = await _apiAcc.patchCollecRemoveCard(_idCollec, _cards);
+    _cardsUri.removeAt(id);
+    var patch = await _apiAcc.patchCollecRemoveCard(_idCollec, _cardsUri);
     setState(() {
-      _cards;
+      _cardsUri;
       buildCards();
     });
     Navigator.of(context).pop();

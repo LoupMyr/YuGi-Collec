@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yugioh_api/screens/search/cardInfo.dart';
 import 'package:yugioh_api/screens/users/collection.dart';
 import 'package:yugioh_api/screens/login/connexion.dart';
 import 'package:yugioh_api/screens/users/deck.dart';
@@ -45,9 +46,11 @@ class MyApp extends StatelessWidget {
           '/routeDecksList': (BuildContext context) =>
               const DecksListPage(title: "Yu-Gi-Oh! - My Decks"),
           '/routeDeck': (BuildContext context) =>
-              DeckPage(title: 'Yu-Gi-Oh - Deck'),
+              const DeckPage(title: 'Yu-Gi-Oh - Deck'),
           '/routeFormDeck': (BuildContext context) =>
               FormDeckPage(title: 'Yu-Gi-Oh - Create Deck'),
+          '/routeCardInfo': (BuildContext context) =>
+              const cardInfoPage(title: 'Yu-Gi-Oh - Card Info'),
         });
   }
 }

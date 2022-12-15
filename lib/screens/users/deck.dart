@@ -15,16 +15,16 @@ class DeckPage extends StatefulWidget {
 class DeckPageState extends State<DeckPage> {
   final ApiAccount _apiAcc = ApiAccount();
   final ApiYGO _apiYgo = ApiYGO();
-  List<dynamic> _cards = [];
+  List<dynamic> _cardsUri = [];
   bool recupDataBool = false;
   final List<String> _tabUrl = [];
   var _idDeck = -1;
 
   void recupCards() async {
     var deck = await _apiAcc.getDeckById(_idDeck);
-    _cards = deck['cartes'];
-    for(int i = 0; i < _cards.length; i++){
-      List<String> temp = _cards[i].split('/');
+    _cardsUri = deck['cartes'];
+    for(int i = 0; i < _cardsUri.length; i++){
+      List<String> temp = _cardsUri[i].split('/');
       int idCardSrv = int.parse(temp[temp.length - 1]);
       var cardSrv = await _apiAcc.getCardById(idCardSrv);
       var response = await _apiYgo.getCardById(cardSrv['numCarte']);
@@ -39,7 +39,7 @@ class DeckPageState extends State<DeckPage> {
 
   Widget buildCards() {
     List<Widget> tabChildren = [];
-    if (_cards.isEmpty) {
+    if (_cardsUri.isEmpty) {
       tabChildren.add(Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: const <Widget>[
@@ -48,7 +48,7 @@ class DeckPageState extends State<DeckPage> {
         ],
       ));
     } else {
-      for (int i = 0; i < _cards.length; i = i + 2) {
+      for (int i = 0; i < _cardsUri.length; i = i + 2) {
         try {
           tabChildren.add(Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -57,7 +57,7 @@ class DeckPageState extends State<DeckPage> {
               buildImg(i),
               Padding(
                   padding:
-                      EdgeInsets.all(MediaQuery.of(context).size.width * 0.1)),
+                      EdgeInsets.all(MediaQuery.of(context).size.width * 0.08)),
               buildImg(i + 1),
             ],
           ));
@@ -79,14 +79,14 @@ class DeckPageState extends State<DeckPage> {
 
   Widget buildImg(int id) {
     return ElevatedButton(
-      onPressed: () => null,
+      onPressed: () => printCard(id),
       onLongPress: () => deleteMenu(id),
       style:
           ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.white)),
       child: Image(
         image: NetworkImage(_tabUrl[id]),
-        height: MediaQuery.of(context).size.height * 0.28,
-        width: MediaQuery.of(context).size.width * 0.28,
+        height: MediaQuery.of(context).size.height * 0.30,
+        width: MediaQuery.of(context).size.width * 0.30,
       ),
     );
   }
@@ -120,13 +120,22 @@ class DeckPageState extends State<DeckPage> {
   }
 
   Future<void> deleteCard(int id) async {
-    _cards.removeAt(id);
-    await _apiAcc.patchDeckRemoveCard(_idDeck, _cards);
+    _cardsUri.removeAt(id);
+    await _apiAcc.patchDeckRemoveCard(_idDeck, _cardsUri);
     setState(() {
-      _cards;
       buildCards();
+      _cardsUri;
     });
     Navigator.of(context).pop();
+  }
+
+  Future<void> printCard(int id) async{
+    List<String> temp = _cardsUri[id].split('/');
+    int length = temp.length;
+    int idCardSrv = int.parse(temp[length - 1]);
+    var cardYGO = await _apiAcc.getCardById(idCardSrv);
+    Navigator.pushNamed(context, "/routeCardInfo",
+        arguments: cardYGO['numCarte']);
   }
 
   @override
