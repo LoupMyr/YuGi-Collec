@@ -171,10 +171,7 @@ class ApiAccount {
 
   Future<http.Response> patchCollecAddCard(
       int id, List<dynamic> listCards, String cardUri) async {
-    print('cardUri Patch: ' + cardUri);
-    print('id Collec: ' + id.toString());
     listCards.add(cardUri);
-    print(listCards.toString());
     var json = convert.jsonEncode(<String, dynamic>{"cartes": listCards});
     return await http.patch(
         Uri.parse(

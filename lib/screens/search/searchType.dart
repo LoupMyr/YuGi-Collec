@@ -244,6 +244,9 @@ class TypePageState extends State<TypePage> {
     var deck = await _apiAcc.getDeckById(id);
     List<dynamic> listCards = deck['cartes'];
     var patch = await _apiAcc.patchDeckAddCard(id, listCards, uriCard);
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      content: Text('Card successfully added to your deck'),
+    ));
     Navigator.pop(context);
     Navigator.pop(context);
   }
@@ -267,6 +270,9 @@ class TypePageState extends State<TypePage> {
     int idCollec = await _apiAcc.getCollecIdByUriUser(uriUser);
     List<dynamic> listCards = await _apiAcc.getListCardsFromCollec(idCollec);
     await _apiAcc.patchCollecAddCard(idCollec, listCards, uriCard);
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      content: Text('Card successfully added to your collection'),
+    ));
     Navigator.pop(context);
   }
 

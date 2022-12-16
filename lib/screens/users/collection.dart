@@ -19,6 +19,7 @@ class CollectionPageState extends State<CollectionPage> {
   final ApiYGO _apiYgo = ApiYGO();
   final List<String> _tabUrl = [];
   int _idCollec = -1;
+  bool _recupCardsBool = false;
 
   Future<String> recupCardsOfCollec() async {
     _tabUrl.clear();
@@ -36,6 +37,7 @@ class CollectionPageState extends State<CollectionPage> {
       var cardApi = convert.jsonDecode(response.body);
       _tabUrl.add(cardApi['data'][0]['card_images'][0]['image_url'].toString());
     }
+    _recupCardsBool = true;
     return '';
   }
 
@@ -44,9 +46,10 @@ class CollectionPageState extends State<CollectionPage> {
     if (_cardsUri.length == 0) {
       tabChildren.add(Row(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: const <Widget>[
+        children: <Widget>[
           Text(
-              "You haven't cards in your collection yet. Lets start adding some !")
+            "You haven't cards in your collection yet.\nLets start adding some !",
+          ),
         ],
       ));
     } else {
@@ -121,7 +124,7 @@ class CollectionPageState extends State<CollectionPage> {
     );
   }
 
-  Future<void> printCard(int id) async{
+  Future<void> printCard(int id) async {
     List<String> temp = _cardsUri[id].split('/');
     int length = temp.length;
     int idCardSrv = int.parse(temp[length - 1]);
@@ -132,21 +135,27 @@ class CollectionPageState extends State<CollectionPage> {
 
   Future<void> deleteCard(int id) async {
     _cardsUri.removeAt(id);
-    var patch = await _apiAcc.patchCollecRemoveCard(_idCollec, _cardsUri);
+    await _apiAcc.patchCollecRemoveCard(_idCollec, _cardsUri);
     setState(() {
       _cardsUri;
       buildCards();
+      _recupCardsBool = false;
     });
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      content: Text('Card successfully deleted'),
+    ));
+    Duration(seconds: 2);
     Navigator.of(context).pop();
   }
 
   @override
   Widget build(BuildContext context) {
-      return FutureBuilder(
-          future: recupCardsOfCollec(),
-          builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-            List<Widget> children;
-            if (snapshot.hasData) {
+    return FutureBuilder(
+        future: recupCardsOfCollec(),
+        builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+          List<Widget> children;
+          if (snapshot.hasData) {
+            if (_recupCardsBool) {
               children = <Widget>[
                 const Padding(padding: EdgeInsets.symmetric(vertical: 10)),
                 Row(
@@ -155,13 +164,8 @@ class CollectionPageState extends State<CollectionPage> {
                   ],
                 ),
               ];
-            } else if (snapshot.hasError) {
-              children = <Widget>[
-                const SpinKitWave(
-                  color: Colors.red,
-                )
-              ];
             } else {
+              recupCardsOfCollec();
               children = <Widget>[
                 const SpinKitWave(
                   color: Colors.orange,
@@ -169,17 +173,31 @@ class CollectionPageState extends State<CollectionPage> {
                 )
               ];
             }
-            return Scaffold(
-              appBar: AppBar(
-                centerTitle: true,
-                title: Text(widget.title),
+          } else if (snapshot.hasError) {
+            children = <Widget>[
+              const SpinKitWave(
+                color: Colors.red,
+              )
+            ];
+          } else {
+            children = <Widget>[
+              const SpinKitWave(
+                color: Colors.orange,
+                size: 100,
+              )
+            ];
+          }
+          return Scaffold(
+            appBar: AppBar(
+              centerTitle: true,
+              title: Text(widget.title),
+            ),
+            body: Center(
+              child: SingleChildScrollView(
+                child: Column(children: children),
               ),
-              body: Center(
-                child: SingleChildScrollView(
-                  child: Column(children: children),
-                ),
-              ),
-            );
-          });
-    }
+            ),
+          );
+        });
+  }
 }

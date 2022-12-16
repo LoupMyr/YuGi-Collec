@@ -28,12 +28,12 @@ class FormDeckPageState extends State<FormDeckPage> {
         centerTitle: true,
         title: Text(widget.title),
       ),
-      body: Column(
-        children: <Widget>[
+      body: Center(
+        child:
           Form(
             key: _formKeyDeckName,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 SizedBox(
                   width: MediaQuery.of(context).size.width * 0.8,
@@ -62,7 +62,6 @@ class FormDeckPageState extends State<FormDeckPage> {
               ],
             ),
           ),
-        ],
       ),
     );
   }

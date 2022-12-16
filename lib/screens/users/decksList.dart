@@ -66,7 +66,7 @@ class DecksListPageState extends State<DecksListPage> {
               icon: Icon(Icons.delete)),
           const Padding(padding: EdgeInsetsDirectional.all(5)),
           IconButton(
-              onPressed: () => editNameDeckMenu(_listDecks[i]['id']),
+              onPressed: () => editNameDeckMenu(_listDecks[i]['id'], _listDecks[i]['nom']),
               icon: Icon(Icons.edit))
         ],
       ));
@@ -123,7 +123,7 @@ class DecksListPageState extends State<DecksListPage> {
     Navigator.of(context).pop();
   }
 
-  Future<String?> editNameDeckMenu(int idDeck) {
+  Future<String?> editNameDeckMenu(int idDeck, String nom) {
     return showDialog<String>(
       context: context,
       barrierDismissible: true,
@@ -136,6 +136,7 @@ class DecksListPageState extends State<DecksListPage> {
               SizedBox(
                 width: MediaQuery.of(context).size.width * 0.8,
                 child: TextFormField(
+                  initialValue: nom,
                   decoration: const InputDecoration(labelText: "Name"),
                   validator: (valeur) {
                     if (valeur == null || valeur.isEmpty) {

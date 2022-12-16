@@ -43,8 +43,7 @@ class DeckPageState extends State<DeckPage> {
       tabChildren.add(Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: const <Widget>[
-          Text("You haven't cards in this deck yet."),
-          Text(' Lets start adding some !'),
+          Text("You haven't cards in this deck yet.\nLets start adding some !"),
         ],
       ));
     } else {
@@ -123,9 +122,12 @@ class DeckPageState extends State<DeckPage> {
     _cardsUri.removeAt(id);
     await _apiAcc.patchDeckRemoveCard(_idDeck, _cardsUri);
     setState(() {
-      buildCards();
       _cardsUri;
+      recupCards();
     });
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      content: Text('Card successfully deleted'),
+    ));
     Navigator.of(context).pop();
   }
 
