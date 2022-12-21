@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:yugioh_api/class/api_account.dart';
-import 'dart:convert' as convert;
 
 class FormDeckPage extends StatefulWidget {
-  FormDeckPage({super.key, required this.title});
+  const FormDeckPage({super.key, required this.title});
 
   final String title;
   @override
@@ -11,13 +10,13 @@ class FormDeckPage extends StatefulWidget {
 }
 
 class FormDeckPageState extends State<FormDeckPage> {
-  ApiAccount _apiAcc = ApiAccount();
+  final ApiAccount  _apiAcc = ApiAccount();
   final _formKeyDeckName = GlobalKey<FormState>();
   String _nomDeck = '';
 
   void createDeck() async{
-    String uriuser = await _apiAcc.getUriUser();
-    await _apiAcc.postDeck(_nomDeck, uriuser);
+    String uriUser = await _apiAcc.getUriUser();
+    await _apiAcc.postDeck(_nomDeck, uriUser);
     Navigator.popAndPushNamed(context, '/routeDecksList');
   }
 
@@ -39,11 +38,11 @@ class FormDeckPageState extends State<FormDeckPage> {
                   width: MediaQuery.of(context).size.width * 0.8,
                   child: TextFormField(
                     decoration: const InputDecoration(labelText: "Name"),
-                    validator: (valeur) {
-                      if (valeur == null || valeur.isEmpty) {
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
                         return 'Please enter a name';
                       } else {
-                        _nomDeck = valeur.toString();
+                        _nomDeck = value.toString();
                       }
                     },
                   ),

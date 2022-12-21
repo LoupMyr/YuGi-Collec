@@ -21,14 +21,14 @@ class DecksListPageState extends State<DecksListPage> {
     _listDecks = [];
     String uriUser = await _apiAcc.getUriUser();
     List<String> temp = uriUser.split('/');
-    int longeur = temp.length;
-    int idUser = int.parse(temp[longeur - 1]);
+    int length = temp.length;
+    int idUser = int.parse(temp[length - 1]);
     var user = await _apiAcc.getUserById(idUser);
     List<dynamic> decks = user['decks'];
     for (int i = 0; i < decks.length; i++) {
       List<String> temp = decks[i].split('/');
-      int longeur = temp.length;
-      int idDeck = int.parse(temp[longeur - 1]);
+      int length = temp.length;
+      int idDeck = int.parse(temp[length - 1]);
       _listDecks.add(await _apiAcc.getDeckById(idDeck));
     }
     return '';
@@ -138,11 +138,11 @@ class DecksListPageState extends State<DecksListPage> {
                 child: TextFormField(
                   initialValue: nom,
                   decoration: const InputDecoration(labelText: "Name"),
-                  validator: (valeur) {
-                    if (valeur == null || valeur.isEmpty) {
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
                       return 'Please enter a name';
                     } else {
-                      _nomDeck = valeur.toString();
+                      _nomDeck = value.toString();
                     }
                   },
                 ),

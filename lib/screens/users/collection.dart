@@ -18,19 +18,19 @@ class CollectionPageState extends State<CollectionPage> {
   final ApiAccount _apiAcc = ApiAccount();
   final ApiYGO _apiYgo = ApiYGO();
   final List<String> _tabUrl = [];
-  int _idCollec = -1;
+  int _idCollect = -1;
   bool _recupCardsBool = false;
 
-  Future<String> recupCardsOfCollec() async {
+  Future<String> recupCardsOfCollect() async {
     _tabUrl.clear();
     String uriUser = await _apiAcc.getUriUser();
-    _idCollec = await _apiAcc.getCollecIdByUriUser(uriUser);
-    _cardsUri = await _apiAcc.getListCardsFromCollec(_idCollec);
+    _idCollect = await _apiAcc.getCollecIdByUriUser(uriUser);
+    _cardsUri = await _apiAcc.getListCardsFromCollec(_idCollect);
 
     for (int i = 0; i < _cardsUri.length; i++) {
       List<String> temp = _cardsUri[i].split('/');
-      int longeur = temp.length;
-      int idCardSrv = int.parse(temp[longeur - 1]);
+      int length = temp.length;
+      int idCardSrv = int.parse(temp[length - 1]);
 
       var cardSrv = await _apiAcc.getCardById(idCardSrv);
       var response = await _apiYgo.getCardById(cardSrv['numCarte']);
@@ -46,7 +46,7 @@ class CollectionPageState extends State<CollectionPage> {
     if (_cardsUri.length == 0) {
       tabChildren.add(Row(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
+        children: const <Widget>[
           Text(
             "You haven't cards in your collection yet.\nLets start adding some !",
           ),
@@ -135,7 +135,7 @@ class CollectionPageState extends State<CollectionPage> {
 
   Future<void> deleteCard(int id) async {
     _cardsUri.removeAt(id);
-    await _apiAcc.patchCollecRemoveCard(_idCollec, _cardsUri);
+    await _apiAcc.patchCollecRemoveCard(_idCollect, _cardsUri);
     setState(() {
       _cardsUri;
       buildCards();
@@ -151,7 +151,7 @@ class CollectionPageState extends State<CollectionPage> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: recupCardsOfCollec(),
+        future: recupCardsOfCollect(),
         builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
           List<Widget> children;
           if (snapshot.hasData) {
@@ -165,7 +165,7 @@ class CollectionPageState extends State<CollectionPage> {
                 ),
               ];
             } else {
-              recupCardsOfCollec();
+              recupCardsOfCollect();
               children = <Widget>[
                 const SpinKitWave(
                   color: Colors.orange,

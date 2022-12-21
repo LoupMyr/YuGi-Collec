@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 
@@ -8,7 +6,7 @@ import 'package:yugioh_api/class/local.dart';
 class ApiAccount {
   final String _login = localLogin;
   final String _mdp = localPassword;
-  final String _token = localToken;
+  String _token = localToken;
 
   // Actions sur User / token
   Future<http.Response> createAccount(String login, String mdp) {
@@ -43,10 +41,11 @@ class ApiAccount {
     return response;
   }
 
-  Future<void> UpdateToken() async {
+  Future<void> updateToken() async {
     var connexion = await getToken(_login, _mdp);
     if (connexion.statusCode == 200) {
       var data = convert.jsonDecode(connexion.body);
+      _token = data['token'].toString();
       localToken = data['token'].toString();
     }
   }
@@ -114,9 +113,8 @@ class ApiAccount {
     return uri;
   }
 
-  Future<List<dynamic>> getListCardsFromCollec(idCollec) async {
-    String url = 'https://s3-4428.nuage-peda.fr/yugiohApi/public/api/collecs/' +
-        idCollec.toString();
+  Future<List<dynamic>> getListCardsFromCollec(idCollect) async {
+    String url = 'https://s3-4428.nuage-peda.fr/yugiohApi/public/api/collecs/$idCollect';
     var response = await http.get(Uri.parse(url));
     List<dynamic> tab = [];
     if (response.statusCode == 200) {

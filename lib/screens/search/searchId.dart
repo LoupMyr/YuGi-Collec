@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:yugioh_api/class/api_account.dart';
 import 'package:yugioh_api/class/api_yugioh.dart';
-import 'package:http/http.dart' as http;
 import 'package:yugioh_api/screens/search/searchLevel.dart';
 import 'dart:convert' as convert;
 import 'package:yugioh_api/screens/search/searchType.dart';
@@ -106,7 +105,6 @@ class IdPageState extends State<IdPage> {
 
 
   Future<String?> buildDecksChoice() async {
-    var decks = await _apiAcc.getDecks();
     return showDialog<String>(
       context: context,
       barrierDismissible: true,
@@ -129,15 +127,15 @@ class IdPageState extends State<IdPage> {
   void getDecksList() async{
     String uriUser = await _apiAcc.getUriUser();
     List<String> temp = uriUser.split('/');
-    int longeur = temp.length;
-    int idUser = int.parse(temp[longeur - 1]);
+    int length = temp.length;
+    int idUser = int.parse(temp[length - 1]);
     var user = await _apiAcc.getUserById(idUser);
     List<dynamic> decks = user['decks'];
     List<dynamic> listDecks = [];
     for (int i = 0; i < decks.length; i++) {
       List<String> temp = decks[i].split('/');
-      int longeur = temp.length;
-      int idDeck = int.parse(temp[longeur - 1]);
+      int length = temp.length;
+      int idDeck = int.parse(temp[length - 1]);
       listDecks.add(await _apiAcc.getDeckById(idDeck));
     }
     buildListDecks(listDecks);
@@ -196,12 +194,13 @@ class IdPageState extends State<IdPage> {
               SizedBox(
                 width: MediaQuery.of(context).size.width * 0.8,
                 child: TextFormField(
+                  autofocus: false,
                   decoration: const InputDecoration(labelText: "Name"),
-                  validator: (valeur) {
-                    if (valeur == null || valeur.isEmpty) {
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
                       return 'Please enter a name';
                     } else {
-                      _nomDeck = valeur.toString();
+                      _nomDeck = value.toString();
                     }
                   },
                 ),
@@ -229,7 +228,7 @@ class IdPageState extends State<IdPage> {
     String uriCard = await _apiAcc.getUriCard(_numCard);
     var deck = await _apiAcc.getDeckById(id);
     List<dynamic> listCards = deck['cartes'];
-    var patch = await _apiAcc.patchDeckAddCard(id, listCards, uriCard);
+    await _apiAcc.patchDeckAddCard(id, listCards, uriCard);
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
       content: Text('Card successfully added'),
     ));
@@ -238,8 +237,8 @@ class IdPageState extends State<IdPage> {
   }
 
   void createDeck() async {
-    String uriuser = await _apiAcc.getUriUser();
-    var response = await _apiAcc.postDeck(_nomDeck, uriuser);
+    String uriUser = await _apiAcc.getUriUser();
+    var response = await _apiAcc.postDeck(_nomDeck, uriUser);
     var body = convert.json.decode(response.body);
     saveToDeck(body['id']);
 
@@ -253,9 +252,9 @@ class IdPageState extends State<IdPage> {
     if (await _apiAcc.checkCollecByUriUser(uriUser) == false) {
       await _apiAcc.postCollec(uriUser);
     }
-    int idCollec = await _apiAcc.getCollecIdByUriUser(uriUser);
-    List<dynamic> listCards = await _apiAcc.getListCardsFromCollec(idCollec);
-    var patch = await _apiAcc.patchCollecAddCard(idCollec, listCards, uriCard);
+    int idCollect = await _apiAcc.getCollecIdByUriUser(uriUser);
+    List<dynamic> listCards = await _apiAcc.getListCardsFromCollec(idCollect);
+    await _apiAcc.patchCollecAddCard(idCollect, listCards, uriCard);
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
       content: Text('Card successfully added'),
     ));

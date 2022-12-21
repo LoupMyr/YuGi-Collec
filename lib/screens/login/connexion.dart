@@ -1,4 +1,3 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:yugioh_api/class/api_account.dart';
 import 'package:yugioh_api/class/local.dart';
@@ -30,7 +29,7 @@ class ConnexionPageState extends State<ConnexionPage> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Welcome back $_login !'),
       ));
-    } else if (response.statusCode == 400) {
+    } else if (response.statusCode == 400 || response.statusCode == 401) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Invalid credentials'),
       ));
@@ -73,11 +72,11 @@ class ConnexionPageState extends State<ConnexionPage> {
                 width: MediaQuery.of(context).size.width * 0.8,
                 child: TextFormField(
                   decoration: const InputDecoration(labelText: "Login"),
-                  validator: (valeur) {
-                    if (valeur == null || valeur.isEmpty) {
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
                       return 'Please enter your login';
                     } else {
-                      _login = valeur.toString();
+                      _login = value.toString();
                     }
                   },
                 ),
@@ -87,11 +86,11 @@ class ConnexionPageState extends State<ConnexionPage> {
                 child: TextFormField(
                   obscureText: true,
                   decoration: const InputDecoration(labelText: "Password"),
-                  validator: (valeur) {
-                    if (valeur == null || valeur.isEmpty) {
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
                       return 'Please enter your password';
                     } else {
-                      _mdp = valeur.toString();
+                      _mdp = value.toString();
                     }
                   },
                 ),

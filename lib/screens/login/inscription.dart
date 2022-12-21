@@ -16,7 +16,7 @@ class InscriptionPageState extends State<InscriptionPage> {
   String _login = '';
   String _mdp1 = '';
   String _mdp2 = '';
-  ApiAccount _apiAcc = ApiAccount();
+  final ApiAccount _apiAcc = ApiAccount();
 
   void checkAccount() async {
     var response = await _apiAcc.createAccount(_login, _mdp1);
@@ -24,7 +24,7 @@ class InscriptionPageState extends State<InscriptionPage> {
     if (response.statusCode == 201) {
       Navigator.pushReplacementNamed(context, '/routeConnexion');
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('Account create'),
+        content: Text('Account created'),
       ));
     } else if (response.statusCode == 422) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -66,11 +66,11 @@ class InscriptionPageState extends State<InscriptionPage> {
                 width: MediaQuery.of(context).size.width * 0.8,
                 child: TextFormField(
                   decoration: const InputDecoration(labelText: "Login"),
-                  validator: (valeur) {
-                    if (valeur == null || valeur.isEmpty) {
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
                       return 'Please enter your login';
                     } else {
-                      _login = valeur.toString();
+                      _login = value.toString();
                     }
                   },
                 ),
@@ -80,11 +80,11 @@ class InscriptionPageState extends State<InscriptionPage> {
                 child: TextFormField(
                   obscureText: true,
                   decoration: const InputDecoration(labelText: "Password"),
-                  validator: (valeur) {
-                    if (valeur == null || valeur.isEmpty) {
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
                       return 'Please enter your password';
                     } else {
-                      _mdp1 = valeur.toString();
+                      _mdp1 = value.toString();
                     }
                   },
                 ),
@@ -95,13 +95,13 @@ class InscriptionPageState extends State<InscriptionPage> {
                   obscureText: true,
                   decoration:
                       const InputDecoration(labelText: "Verify password"),
-                  validator: (valeur) {
-                    if (valeur == null || valeur.isEmpty) {
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
                       return 'Please enter your password';
-                    } else if (valeur != _mdp1) {
+                    } else if (value != _mdp1) {
                       return 'Your passwords are different';
                     } else {
-                      _mdp2 = valeur.toString();
+                      _mdp2 = value.toString();
                     }
                   },
                 ),

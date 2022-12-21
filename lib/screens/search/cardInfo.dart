@@ -3,10 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:yugioh_api/class/api_account.dart';
 import 'package:yugioh_api/class/api_yugioh.dart';
-import 'package:http/http.dart' as http;
-import 'package:yugioh_api/screens/search/searchLevel.dart';
 import 'dart:convert' as convert;
-import 'package:yugioh_api/screens/search/searchType.dart';
 
 class cardInfoPage extends StatefulWidget {
   const cardInfoPage({super.key, required this.title});

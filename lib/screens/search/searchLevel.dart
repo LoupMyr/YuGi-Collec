@@ -142,15 +142,15 @@ class LevelPageState extends State<LevelPage> {
   void getDecksList(String numCard) async{
     String uriUser = await _apiAcc.getUriUser();
     List<String> temp = uriUser.split('/');
-    int longeur = temp.length;
-    int idUser = int.parse(temp[longeur - 1]);
+    int length = temp.length;
+    int idUser = int.parse(temp[length - 1]);
     var user = await _apiAcc.getUserById(idUser);
     List<dynamic> decks = user['decks'];
     List<dynamic> listDecks = [];
     for (int i = 0; i < decks.length; i++) {
       List<String> temp = decks[i].split('/');
-      int longeur = temp.length;
-      int idDeck = int.parse(temp[longeur - 1]);
+      int length = temp.length;
+      int idDeck = int.parse(temp[length - 1]);
       listDecks.add(await _apiAcc.getDeckById(idDeck));
     }
     buildListDecks(listDecks, numCard);
@@ -210,11 +210,11 @@ class LevelPageState extends State<LevelPage> {
                 width: MediaQuery.of(context).size.width * 0.8,
                 child: TextFormField(
                   decoration: const InputDecoration(labelText: "Name"),
-                  validator: (valeur) {
-                    if (valeur == null || valeur.isEmpty) {
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
                       return 'Please enter a name';
                     } else {
-                      _nomDeck = valeur.toString();
+                      _nomDeck = value.toString();
                     }
                   },
                 ),
@@ -242,7 +242,7 @@ class LevelPageState extends State<LevelPage> {
     String uriCard = await _apiAcc.getUriCard(numCard);
     var deck = await _apiAcc.getDeckById(id);
     List<dynamic> listCards = deck['cartes'];
-    var patch = await _apiAcc.patchDeckAddCard(id, listCards, uriCard);
+    await _apiAcc.patchDeckAddCard(id, listCards, uriCard);
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
       content: Text('Card successfully added to your deck'),
     ));
@@ -250,8 +250,8 @@ class LevelPageState extends State<LevelPage> {
   }
 
   void createDeck(String numCard) async {
-    String uriuser = await _apiAcc.getUriUser();
-    var response = await _apiAcc.postDeck(_nomDeck, uriuser);
+    String uriUser = await _apiAcc.getUriUser();
+    var response = await _apiAcc.postDeck(_nomDeck, uriUser);
     var body = convert.json.decode(response.body);
     saveToDeck(body['id'], numCard);
     Navigator.pop(context);
@@ -264,9 +264,9 @@ class LevelPageState extends State<LevelPage> {
     if (await _apiAcc.checkCollecByUriUser(uriUser) == false) {
       await _apiAcc.postCollec(uriUser);
     }
-    int idCollec = await _apiAcc.getCollecIdByUriUser(uriUser);
-    List<dynamic> listCards = await _apiAcc.getListCardsFromCollec(idCollec);
-    await _apiAcc.patchCollecAddCard(idCollec, listCards, uriCard);
+    int idCollect = await _apiAcc.getCollecIdByUriUser(uriUser);
+    List<dynamic> listCards = await _apiAcc.getListCardsFromCollec(idCollect);
+    await _apiAcc.patchCollecAddCard(idCollect, listCards, uriCard);
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
       content: Text('Card successfully added to your collection'),
     ));
